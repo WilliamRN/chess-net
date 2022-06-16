@@ -39,26 +39,5 @@ namespace ChessNet.Data.Models.Pieces
                     yield return value;
             }
         }
-
-        private bool TryGetValidPieceMovement(BoardPosition offset, ChessBoard chessBoard, out PieceMovement pieceMovement)
-        {
-            var position = Position.GetOffset(offset);
-            var move = chessBoard.MoveTo(position);
-            pieceMovement = default;
-
-            if (IsValidMove(move))
-            {
-                pieceMovement = move;
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool IsValidMove(PieceMovement move)
-        {
-            return move.IsValidPosition &&
-                (move.PieceAtDestination is null || move.IsCaptureFor(Color));
-        }
     }
 }

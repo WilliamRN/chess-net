@@ -38,6 +38,16 @@ namespace ChessNet.Data.Structs
             return left.Column != right.Column || left.Row != right.Row;
         }
 
+        public static BoardPosition operator +(BoardPosition left, BoardPosition right)
+        {
+            return new BoardPosition(left.Column + right.Column, left.Row + right.Row);
+        }
+
+        public static BoardPosition operator -(BoardPosition left, BoardPosition right)
+        {
+            return new BoardPosition(left.Column - right.Column, left.Row - right.Row);
+        }
+
         public override bool Equals(object obj)
         {
             BoardPosition? objAsPosition = obj as BoardPosition?;

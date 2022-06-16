@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace ChessNet.Data.Structs
 {
-    [DebuggerDisplay("{Destination}, isCapture: {IsCapture}")]
+    [DebuggerDisplay("{Destination}, isDefault: {IsDefault}, isOcuppied: {PieceAtDestination != null}")]
     public struct PieceMovement
     {
         private readonly bool _isPopulated;

@@ -52,8 +52,8 @@ namespace ChessNet.Data.Models
         {
             if (column < 0) return false;
             if (row < 0) return false;
-            if (column > _chessBoard.GetLength(0)) return false;
-            if (row > _chessBoard.GetLength(1)) return false;
+            if (column >= _chessBoard.GetLength(0)) return false;
+            if (row >= _chessBoard.GetLength(1)) return false;
 
             return true;
         }

@@ -19,6 +19,7 @@ namespace ChessNet.Data.Models.Pieces
             var isPieceAhead = false;
 
             // TODO: Promotion to Queen, at board edge.
+            // TODO: en passant
 
             // Can move but not capture ahead
             position = Position.GetOffset(0, IsWhite ? 1 : -1);
