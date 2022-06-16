@@ -1,4 +1,5 @@
-﻿using ChessNet.Data.Enums;
+﻿using ChessNet.Data.Constants;
+using ChessNet.Data.Enums;
 using ChessNet.Data.Structs;
 
 namespace ChessNet.Data.Models.Pieces
@@ -6,7 +7,7 @@ namespace ChessNet.Data.Models.Pieces
     public class Rook : Piece
     {
         public Rook(PieceColor pieceColor, BoardPosition boardPosition) 
-            : base(pieceColor, PieceType.Rook, boardPosition)
+            : base(pieceColor, boardPosition, PiecePoints.ROOK)
         {
 
         }

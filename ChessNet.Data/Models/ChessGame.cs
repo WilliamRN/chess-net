@@ -39,7 +39,7 @@ namespace ChessNet.Data.Models
         public void AddPiece(Piece piece)
         {
             if(!_chessBoard.AddPiece(piece))
-                throw new InvalidOperationException($"could not add the {piece.Type} at {piece.Position.AsString()}");
+                throw new InvalidOperationException($"could not add the {piece.GetType().Name} at {piece.Position.AsString()}");
         }
 
         public bool MovePiece<T>(T piece, BoardPosition boardPosition) where T : Piece
@@ -49,7 +49,7 @@ namespace ChessNet.Data.Models
             Piece currentPiece = _chessBoard.GetPiece(piece);
 
             if (currentPiece.Color != CurrentPlayer.Color)
-                throw new InvalidOperationException($"invalid player piece, expected a {CurrentPlayer.Color} piece but got a {piece.Color} {piece.Type}");
+                throw new InvalidOperationException($"invalid player piece, expected a {CurrentPlayer.Color} piece but got a {piece.Color} {piece.GetType().Name}");
 
             var validMoves = currentPiece.GetMovements(_chessBoard);
 
