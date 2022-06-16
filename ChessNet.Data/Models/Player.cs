@@ -4,20 +4,18 @@ namespace ChessNet.Data.Models
 {
     public class Player
     {
+        public Func<IEnumerable<Piece>> _piecesSelector { get; set; }
+
         public PieceColor Color { get; set; }
-        public IEnumerable<Piece> Pieces { get; set; }
         public int Points { get; set; }
 
-        public Player(PieceColor pieceColor)
+        public Player(PieceColor pieceColor, Func<IEnumerable<Piece>> piecesSelector)
         {
             Color = pieceColor;
-            Pieces = new List<Piece>();
             Points = 0;
+            _piecesSelector = piecesSelector;
         }
 
-        public Player(PieceColor pieceColor, IEnumerable<Piece> pieces) : this(pieceColor)
-        {
-            Pieces = pieces;
-        }
+        public IEnumerable<Piece> Pieces => _piecesSelector();
     }
 }

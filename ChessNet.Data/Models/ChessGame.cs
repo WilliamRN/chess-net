@@ -18,8 +18,8 @@ namespace ChessNet.Data.Models
         public ChessGame(IEnumerable<Piece> pieces, PieceColor turn = DefaultValues.STARTING_COLOR)
         {
             _chessBoard = new ChessBoard();
-            _playerWhite = new Player(PieceColor.White);
-            _playerBlack = new Player(PieceColor.Black);
+            _playerWhite = new Player(PieceColor.White, () => _chessBoard.GetPieces(PieceColor.White));
+            _playerBlack = new Player(PieceColor.Black, () => _chessBoard.GetPieces(PieceColor.Black));
             _turn = turn;
 
             AddPiecesRange(pieces);
@@ -32,28 +32,13 @@ namespace ChessNet.Data.Models
 
         public void AddPiecesRange(IEnumerable<Piece> pieces)
         {
-            bool isAdded = true;
-
             foreach (var piece in pieces)
-            {
-                isAdded = _chessBoard.AddPiece(piece);
-                if (!isAdded) throw new InvalidOperationException($"could not add the {piece.Type} at {piece.Position.AsString()}");
-            }
-
-            _playerWhite.Pieces = _playerWhite.Pieces.Concat(pieces.Where(p => p.IsWhite));
-            _playerBlack.Pieces = _playerBlack.Pieces.Concat(pieces.Where(p => !p.IsWhite));
+                AddPiece(piece);
         }
 
         public void AddPiece(Piece piece)
         {
-            if(_chessBoard.AddPiece(piece))
-            {
-                if (piece.IsWhite)
-                    _playerWhite.Pieces = _playerWhite.Pieces.Append(piece);
-                else
-                    _playerBlack.Pieces = _playerBlack.Pieces.Append(piece);
-            }
-            else
+            if(!_chessBoard.AddPiece(piece))
                 throw new InvalidOperationException($"could not add the {piece.Type} at {piece.Position.AsString()}");
         }
 

@@ -1,6 +1,6 @@
 ﻿using ChessNet.Data.Constants;
+using ChessNet.Data.Enums;
 using ChessNet.Data.Structs;
-using System.Diagnostics;
 
 namespace ChessNet.Data.Models
 {
@@ -28,6 +28,13 @@ namespace ChessNet.Data.Models
             }
 
             return false;
+        }
+
+        public IEnumerable<Piece> GetPieces(PieceColor pieceColor)
+        {
+            return _chessBoard
+                .Cast<Piece>()
+                .Where(p => p?.Color == pieceColor);
         }
 
         public Piece GetPiece(int column, int row)
