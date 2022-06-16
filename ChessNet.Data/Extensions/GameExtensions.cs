@@ -5,20 +5,10 @@ namespace ChessNet.Data.Extensions
 {
     internal static class GameExtensions
     {
-        public static string AsLetter(this int column)
+        public static char AsLetter(this int column)
         {
-            return column switch
-            {
-                1 => "A",
-                2 => "B",
-                3 => "C",
-                4 => "D",
-                5 => "E",
-                6 => "F",
-                7 => "G",
-                8 => "H",
-                _ => "",
-            };
+            char baseA = 'A';
+            return (char)(baseA + column);
         }
 
         public static bool TryGetAt(this IEnumerable<PieceMovement> pieceMovements, int column, int row, out PieceMovement pieceMovement)

@@ -1,5 +1,6 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Structs;
+using System.Diagnostics;
 
 namespace ChessNet.Data.Models
 {
@@ -18,6 +19,7 @@ namespace ChessNet.Data.Models
                 GetPiece(piece.Position) == null)
             {
                 _chessBoard[piece.Position.Column, piece.Position.Row] = piece;
+                return true;
             }
 
             return false;
@@ -54,11 +56,27 @@ namespace ChessNet.Data.Models
         {
             Piece pieceAtDestination = _chessBoard[to.Column, to.Row];
             Piece originPiece = _chessBoard[from.Column, from.Row];
-            
+
             _chessBoard[from.Column, from.Row] = null;
             _chessBoard[to.Column, to.Row] = originPiece;
 
             return pieceAtDestination;
+        }
+
+        public int PieceCount
+        {
+            get
+            {
+                var count = 0;
+
+                foreach(Piece piece in _chessBoard)
+                {
+                    if (piece != null)
+                        count++;
+                }
+
+                return count;
+            }
         }
     }
 }

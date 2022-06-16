@@ -3,7 +3,7 @@ using ChessNet.Data.Structs;
 
 namespace ChessNet.Data.Models
 {
-    public class Piece
+    public abstract class Piece
     {
         public PieceColor Color { get; private set; }
         public PieceType Type { get; private set; }
@@ -31,5 +31,7 @@ namespace ChessNet.Data.Models
             IsFirstMove = true;
             Points = 1; // TODO: make points relative to piece type.
         }
+
+        public abstract IEnumerable<PieceMovement> GetMovements(ChessBoard chessBoard);
     }
 }
