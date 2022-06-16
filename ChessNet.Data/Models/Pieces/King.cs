@@ -8,10 +8,16 @@ namespace ChessNet.Data.Models.Pieces
     {
         private static readonly IEnumerable<BoardPosition> ValidMoveOffsets = new List<BoardPosition>()
         {
+            new BoardPosition(-1, -1),
+            new BoardPosition(-1, 0),
+            new BoardPosition(-1, 1),
+
             new BoardPosition(0, 1),
             new BoardPosition(0, -1),
+
+            new BoardPosition(1, 1),
             new BoardPosition(1, 0),
-            new BoardPosition(-1, 0),
+            new BoardPosition(1, -1),
         };
 
         public King(PieceColor pieceColor, BoardPosition boardPosition) 

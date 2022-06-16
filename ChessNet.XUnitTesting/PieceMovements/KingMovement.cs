@@ -28,12 +28,14 @@ namespace ChessNet.XUnitTesting.PieceMovements
             var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(0, 7, out PieceMovement moveToOutsideOfRange);
             var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(1, 4, out PieceMovement moveToCaptureEnemy);
             var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(0, 3, out PieceMovement moveToEmptyPath);
+            var isMoveToEmptyDiagnalValid = movesAvailable.TryMoveTo(1, 5, out PieceMovement moveToEmptyDiagnal);
 
             Assert.True(!isMoveToCaptureFriendValid && moveToCaptureFriend.IsDefault);
             Assert.True(!isMoveToOutsideOfBoardValid && moveToOutsideOfBoard.IsDefault);
             Assert.True(!isMoveToOutsideOfRange && moveToOutsideOfRange.IsDefault);
             Assert.True(isMoveToCaptureEnemyValid && !moveToCaptureEnemy.IsDefault);
             Assert.True(isMoveToEmptyPathValid && !moveToEmptyPath.IsDefault);
+            Assert.True(isMoveToEmptyDiagnalValid && !moveToEmptyDiagnal.IsDefault);
         }
 
         [Fact]
