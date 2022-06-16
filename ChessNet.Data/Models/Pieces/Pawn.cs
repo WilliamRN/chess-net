@@ -19,42 +19,43 @@ namespace ChessNet.Data.Models.Pieces
 
             // TODO: Promotion to Queen, at board edge.
 
+            // Can move but not capture ahead
             position = Position.GetOffset(0, IsWhite ? 1 : -1);
             move = chessBoard.MoveTo(position);
 
-            if (move.IsValidPosition &&
-                move.PieceAtDestination is null)
+            if (IsValidMove(move))
                 yield return move;
             else
                 isPieceAhead = true;
 
-            // Can move but not capture ahead
+            // On first move, if the path is clear, its valid to move two spaces.
             if (IsFirstMove && !isPieceAhead)
             {
                 position = Position.GetOffset(0, IsWhite ? 2 : -2);
                 move = chessBoard.MoveTo(position);
 
-                if(move.IsValidPosition &&
-                    move.PieceAtDestination is null)
+                if(IsValidMove(move))
                     yield return move;
             }
 
             // Can only capture on imediate diagonals
             position = Position.GetOffset(1, IsWhite ? 1 : -1);
             move = chessBoard.MoveTo(position);
-
-            if (move.IsValidPosition &&
-                move.PieceAtDestination != null && 
-                move.PieceAtDestination.Color != Color)
-                yield return move;
+            if (IsValidCapture(move)) yield return move;
 
             position = Position.GetOffset(-1, IsWhite ? 1 : -1);
             move = chessBoard.MoveTo(position);
+            if (IsValidCapture(move)) yield return move;
+        }
 
-            if (move.IsValidPosition &&
-                move.PieceAtDestination != null && 
-                move.PieceAtDestination.Color != Color)
-                yield return move;
+        private bool IsValidMove(PieceMovement move)
+        {
+            return move.IsValidPosition && move.PieceAtDestination is null;
+        }
+
+        private bool IsValidCapture(PieceMovement move)
+        {
+            return move.IsValidPosition && move.IsCaptureFor(Color);
         }
     }
 }

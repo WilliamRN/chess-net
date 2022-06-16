@@ -10,14 +10,14 @@ namespace ChessNet.XUnitTesting
         [Fact]
         public void When_BoardIsInitializedWithInvalidPiecePosition_Then_RaiseInvalidOperationException()
         {
-            List<Piece> pieces = new List<Piece>
+            List<Piece> pieces = new()
             {
                 new Pawn(PieceColor.White, new BoardPosition(0, 0)),
                 new Pawn(PieceColor.White, new BoardPosition(0, 0)),
             };
 
             Assert.Throws<InvalidOperationException>(() => {
-                ChessGame game = new ChessGame(pieces);
+                ChessGame game = new(pieces);
             });
         }
     }

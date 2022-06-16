@@ -1,5 +1,4 @@
 using ChessNet.Data.Enums;
-using ChessNet.Data.Models;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 

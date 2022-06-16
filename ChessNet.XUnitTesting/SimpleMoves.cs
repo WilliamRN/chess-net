@@ -10,9 +10,9 @@ namespace ChessNet.XUnitTesting
         [Fact]
         public void When_BoardIsInitialized_Then_MovePawn()
         {
-            ChessGame game = new ChessGame();
+            ChessGame game = new();
 
-            var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn) as Pawn;
+            var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn);
             var validMoves = pawn.GetMovements(game.Board).ToList();
             var isValidMove = game.MovePiece(pawn, validMoves.First().Destination);
 
@@ -23,23 +23,24 @@ namespace ChessNet.XUnitTesting
         [Fact]
         public void When_BoardIsInitializedToCapture_Then_MovePawnToCapture()
         {
-            List<Piece> pieces = new List<Piece>
+            List<Piece> pieces = new()
             {
                 new Pawn(PieceColor.White, new BoardPosition(4, 4)),
                 new Pawn(PieceColor.Black, new BoardPosition(5, 5)),
             };
 
-            ChessGame game = new ChessGame(pieces);
+            ChessGame game = new(pieces);
 
+            var startingPlayerColor = game.CurrentPlayer.Color;
             var previousCount = game.Board.PieceCount;
             var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn) as Pawn;
             var previousPosition = pawn.Position;
             var validMoves = pawn.GetMovements(game.Board).ToList();
-            var captureMove = validMoves.Where(m => m.IsCapture).FirstOrDefault();
+            var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
             var isValidMove = game.MovePiece(pawn, captureMove.Destination);
 
             Assert.True(game.Board.PieceCount < previousCount);
-            Assert.True(captureMove.IsCapture && previousPosition != pawn.Position);
+            Assert.True(captureMove.IsCaptureFor(startingPlayerColor) && previousPosition != pawn.Position);
             Assert.True(validMoves.Count() > 1);
             Assert.True(isValidMove);
         }

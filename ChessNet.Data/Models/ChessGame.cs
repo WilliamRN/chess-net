@@ -57,7 +57,7 @@ namespace ChessNet.Data.Models
             {
                 var capturedPiece = _chessBoard.MovePieceAndReturnCaptured(currentPiece.Position, nextMove.Destination);
 
-                if (nextMove.IsCapture && capturedPiece != null)
+                if (nextMove.IsCaptureFor(CurrentPlayer.Color))
                     CurrentPlayer.Points += capturedPiece.Points;
 
                 _turn = CurrentPlayer.Color == PieceColor.Black ? PieceColor.White : PieceColor.Black;

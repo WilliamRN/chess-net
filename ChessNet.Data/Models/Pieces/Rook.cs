@@ -25,11 +25,7 @@ namespace ChessNet.Data.Models.Pieces
             {
                 position = new BoardPosition(Position.Column, row);
                 var move = chessBoard.MoveTo(position);
-                
-                if (move.IsValidPosition && 
-                    (move.PieceAtDestination is null || 
-                    (move.PieceAtDestination != null && move.PieceAtDestination.Color != Color)))
-                    yield return move;
+                if (IsValidMove(move)) yield return move;
 
                 // Cannot move past a piece on its movement path.
                 if (move.IsValidPosition && move.PieceAtDestination != null) break;
@@ -40,11 +36,7 @@ namespace ChessNet.Data.Models.Pieces
             {
                 position = new BoardPosition(Position.Column, row);
                 var move = chessBoard.MoveTo(position);
-
-                if (move.IsValidPosition &&
-                    (move.PieceAtDestination is null ||
-                    (move.PieceAtDestination != null && move.PieceAtDestination.Color != Color)))
-                    yield return move;
+                if (IsValidMove(move)) yield return move;
 
                 // Cannot move past a piece on its movement path.
                 if (move.IsValidPosition && move.PieceAtDestination != null) break;
@@ -55,11 +47,7 @@ namespace ChessNet.Data.Models.Pieces
             {
                 position = new BoardPosition(column, Position.Row);
                 var move = chessBoard.MoveTo(position);
-
-                if (move.IsValidPosition &&
-                    (move.PieceAtDestination is null ||
-                    (move.PieceAtDestination != null && move.PieceAtDestination.Color != Color)))
-                    yield return move;
+                if (IsValidMove(move)) yield return move;
 
                 // Cannot move past a piece on its movement path.
                 if (move.IsValidPosition && move.PieceAtDestination != null) break;
@@ -70,15 +58,17 @@ namespace ChessNet.Data.Models.Pieces
             {
                 position = new BoardPosition(column, Position.Row);
                 var move = chessBoard.MoveTo(position);
-
-                if (move.IsValidPosition &&
-                    (move.PieceAtDestination is null ||
-                    (move.PieceAtDestination != null && move.PieceAtDestination.Color != Color)))
-                    yield return move;
+                if (IsValidMove(move)) yield return move;
 
                 // Cannot move past a piece on its movement path.
                 if (move.IsValidPosition && move.PieceAtDestination != null) break;
             }
+        }
+
+        private bool IsValidMove(PieceMovement move)
+        {
+            return move.IsValidPosition &&
+                (move.PieceAtDestination is null || move.IsCaptureFor(Color));
         }
     }
 }

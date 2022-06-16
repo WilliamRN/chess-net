@@ -11,14 +11,14 @@ namespace ChessNet.XUnitTesting.PieceMovements
         [Fact]
         public void When_MovingRook_Then_MovesAreValidated()
         {
-            List<Piece> pieces = new List<Piece>
+            List<Piece> pieces = new()
             {
                 new Rook(PieceColor.White, new BoardPosition(4, 4)),
                 new Rook(PieceColor.White, new BoardPosition(4, 5)),
                 new Rook(PieceColor.Black, new BoardPosition(5, 4)),
             };
 
-            ChessGame game = new ChessGame(pieces);
+            ChessGame game = new(pieces);
 
             var rook = game.Board.GetPiece(4, 4);
             var movesAvailable = rook.GetMovements(game.Board);
@@ -39,24 +39,25 @@ namespace ChessNet.XUnitTesting.PieceMovements
         [Fact]
         public void When_RookIsSetToCapture_Then_Capture()
         {
-            List<Piece> pieces = new List<Piece>
+            List<Piece> pieces = new()
             {
                 new Rook(PieceColor.White, new BoardPosition(0, 0)),
                 new Pawn(PieceColor.Black, new BoardPosition(0, 6)),
             };
 
-            ChessGame game = new ChessGame(pieces);
+            ChessGame game = new(pieces);
 
+            var startingPlayerColor = game.CurrentPlayer.Color;
             var previousCount = game.Board.PieceCount;
             var rook = game.CurrentPlayer.Pieces.First(p => p is Rook) as Rook;
             var previousPosition = rook.Position;
             var validMoves = rook.GetMovements(game.Board).ToList();
-            var captureMove = validMoves.Where(m => m.IsCapture).FirstOrDefault();
+            var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
             var isValidMove = game.MovePiece(rook, captureMove.Destination);
 
             Assert.True(game.Board.PieceCount < previousCount);
-            Assert.True(captureMove.IsCapture && previousPosition != rook.Position);
-            Assert.True(validMoves.Count() > 1);
+            Assert.True(captureMove.IsCaptureFor(startingPlayerColor) && previousPosition != rook.Position);
+            Assert.True(validMoves.Count > 1);
             Assert.True(isValidMove);
         }
 
@@ -64,22 +65,22 @@ namespace ChessNet.XUnitTesting.PieceMovements
         public void When_RookIsMovedThenSetToCapture_Then_Capture()
         {
             // ARRANGE: Create board, with rook on offset column from pawn.
-            List<Piece> pieces = new List<Piece>
+            List<Piece> pieces = new()
             {
                 new Rook(PieceColor.White, new BoardPosition(2, 0)),
                 new Pawn(PieceColor.Black, new BoardPosition(0, 6)),
             };
 
-            ChessGame game = new ChessGame(pieces);
+            ChessGame game = new(pieces);
 
             // ACT:
             var previousCount = game.Board.PieceCount;
             var rook = game.CurrentPlayer.Pieces.First(p => p is Rook) as Rook;
 
-            // Ensure rook cannot capture black pawn.
+            // Ensure white rook cannot capture black pawn.
             var isSetToCaptureBeforeMove = rook
                 .GetMovements(game.Board)
-                .Where(m => m.IsCapture)
+                .Where(m => m.IsCaptureFor(PieceColor.White))
                 .Any();
 
             // Move rook to capture.
@@ -95,7 +96,7 @@ namespace ChessNet.XUnitTesting.PieceMovements
 
             var captureMove = rookAfterMove
                 .GetMovements(game.Board)
-                .Where(m => m.IsCapture)
+                .Where(m => m.IsCaptureFor(PieceColor.White))
                 .FirstOrDefault();
 
             var isValidMove = game.MovePiece(rook, captureMove.Destination);

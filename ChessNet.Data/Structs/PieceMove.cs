@@ -19,7 +19,11 @@ namespace ChessNet.Data.Structs
             _isPopulated = true;
         }
 
-        public bool IsCapture => PieceAtDestination != null;
+        public bool IsCaptureFor(PieceColor color)
+        {
+            return PieceAtDestination != null && PieceAtDestination.Color != color;
+        }
+
         public bool IsDefault => !_isPopulated;
         public bool IsValidPosition => _isPopulated;
     }
