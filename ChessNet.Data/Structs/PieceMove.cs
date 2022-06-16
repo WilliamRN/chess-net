@@ -1,4 +1,5 @@
 ﻿using ChessNet.Data.Enums;
+using ChessNet.Data.Models;
 using System.Diagnostics;
 
 namespace ChessNet.Data.Structs
@@ -6,13 +7,20 @@ namespace ChessNet.Data.Structs
     [DebuggerDisplay("{Destination}, isCapture: {IsCapture}")]
     public struct PieceMovement
     {
-        public BoardPosition Destination;
-        public bool IsCapture;
+        private readonly bool _isPopulated;
 
-        public PieceMovement(BoardPosition boardPosition, bool isCapture)
+        public BoardPosition Destination;
+        public Piece PieceAtDestination;
+
+        public PieceMovement(BoardPosition boardPosition, Piece piece = null)
         {
             Destination = boardPosition;
-            IsCapture = isCapture;
+            PieceAtDestination = piece;
+            _isPopulated = true;
         }
+
+        public bool IsCapture => PieceAtDestination != null;
+        public bool IsDefault => !_isPopulated;
+        public bool IsValidPosition => _isPopulated;
     }
 }

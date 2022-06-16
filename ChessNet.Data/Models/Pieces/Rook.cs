@@ -21,53 +21,64 @@ namespace ChessNet.Data.Models.Pieces
             // and the king does not cross over or end up on a square attacked by an opposing piece.
 
             // + movement North
-            for (int i = Position.Row + 1; i < chessBoard.Rows; i++)
+            for (int row = Position.Row + 1; row < chessBoard.Rows; row++)
             {
-                position = new BoardPosition(Position.Column, i);
-                var (pieceMovement, isValid, isBreaking) = CheckPosition(chessBoard, position);
-                if (isValid) yield return pieceMovement;
-                if (isBreaking) break;
+                position = new BoardPosition(Position.Column, row);
+                var move = chessBoard.MoveTo(position);
+                
+                if (move.IsValidPosition && 
+                    (move.PieceAtDestination is null || 
+                    (move.PieceAtDestination != null && move.PieceAtDestination.Color != Color)))
+                    yield return move;
+
+                // Cannot move past a piece on its movement path.
+                if (move.IsValidPosition && move.PieceAtDestination != null) break;
             }
 
             // + movement South
-            for (int i = Position.Row - 1; i >= 0; i--)
+            for (int row = Position.Row - 1; row >= 0; row--)
             {
-                position = new BoardPosition(Position.Column, i);
-                var (pieceMovement, isValid, isBreaking) = CheckPosition(chessBoard, position);
-                if (isValid) yield return pieceMovement;
-                if (isBreaking) break;
+                position = new BoardPosition(Position.Column, row);
+                var move = chessBoard.MoveTo(position);
+
+                if (move.IsValidPosition &&
+                    (move.PieceAtDestination is null ||
+                    (move.PieceAtDestination != null && move.PieceAtDestination.Color != Color)))
+                    yield return move;
+
+                // Cannot move past a piece on its movement path.
+                if (move.IsValidPosition && move.PieceAtDestination != null) break;
             }
 
             // + movement East
-            for (int i = Position.Column + 1; i < chessBoard.Columns; i++)
+            for (int column = Position.Column + 1; column < chessBoard.Columns; column++)
             {
-                position = new BoardPosition(i, Position.Row);
-                var (pieceMovement, isValid, isBreaking) = CheckPosition(chessBoard, position);
-                if (isValid) yield return pieceMovement;
-                if (isBreaking) break;
+                position = new BoardPosition(column, Position.Row);
+                var move = chessBoard.MoveTo(position);
+
+                if (move.IsValidPosition &&
+                    (move.PieceAtDestination is null ||
+                    (move.PieceAtDestination != null && move.PieceAtDestination.Color != Color)))
+                    yield return move;
+
+                // Cannot move past a piece on its movement path.
+                if (move.IsValidPosition && move.PieceAtDestination != null) break;
             }
 
             // + movement West
-            for (int i = Position.Column - 1; i >= 0; i--)
+            for (int column = Position.Column - 1; column >= 0; column--)
             {
-                position = new BoardPosition(i, Position.Row);
-                var (pieceMovement, isValid, isBreaking) = CheckPosition(chessBoard, position);
-                if (isValid) yield return pieceMovement;
-                if (isBreaking) break;
-            }
-        }
+                position = new BoardPosition(column, Position.Row);
+                var move = chessBoard.MoveTo(position);
 
-        private (PieceMovement, bool, bool) CheckPosition(ChessBoard chessBoard, BoardPosition position)
-        {
-            if (chessBoard.IsValidPosition(position))
-            {
-                if (chessBoard.GetPiece(position) != null)
-                    return (new PieceMovement(position, true), true, true);
-                else
-                    return (new PieceMovement(position, false), true, false);
+                if (move.IsValidPosition &&
+                    (move.PieceAtDestination is null ||
+                    (move.PieceAtDestination != null && move.PieceAtDestination.Color != Color)))
+                    yield return move;
+
+                // Cannot move past a piece on its movement path.
+                if (move.IsValidPosition && move.PieceAtDestination != null) break;
             }
-            else
-                return (default, false, true);
         }
     }
 }

@@ -3,7 +3,7 @@ using ChessNet.Data.Structs;
 
 namespace ChessNet.Data.Extensions
 {
-    internal static class GameExtensions
+    public static class GameExtensions
     {
         public static char AsLetter(this int column)
         {
@@ -11,7 +11,7 @@ namespace ChessNet.Data.Extensions
             return (char)(baseA + column);
         }
 
-        public static bool TryGetAt(this IEnumerable<PieceMovement> pieceMovements, int column, int row, out PieceMovement pieceMovement)
+        public static bool TryMoveTo(this IEnumerable<PieceMovement> pieceMovements, int column, int row, out PieceMovement pieceMovement)
         {
             pieceMovement = default;
             bool result = false;
@@ -29,10 +29,10 @@ namespace ChessNet.Data.Extensions
             return result;
         }
 
-        public static bool TryGetAt(this IEnumerable<PieceMovement> pieceMovements, BoardPosition boardPosition, out PieceMovement pieceMovement) =>
-            pieceMovements.TryGetAt(boardPosition.Column, boardPosition.Row, out pieceMovement);
+        public static bool TryMoveTo(this IEnumerable<PieceMovement> pieceMovements, BoardPosition boardPosition, out PieceMovement pieceMovement) =>
+            pieceMovements.TryMoveTo(boardPosition.Column, boardPosition.Row, out pieceMovement);
 
-        public static bool TryGetAt(this IEnumerable<PieceMovement> pieceMovements, Piece piece, out PieceMovement pieceMovement) =>
-            pieceMovements.TryGetAt(piece.Position.Column, piece.Position.Row, out pieceMovement);
+        public static bool TryMoveTo(this IEnumerable<PieceMovement> pieceMovements, Piece piece, out PieceMovement pieceMovement) =>
+            pieceMovements.TryMoveTo(piece.Position.Column, piece.Position.Row, out pieceMovement);
     }
 }

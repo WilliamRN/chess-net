@@ -68,7 +68,7 @@ namespace ChessNet.Data.Models
 
             var validMoves = currentPiece.GetMovements(_chessBoard);
 
-            if (validMoves.TryGetAt(boardPosition, out nextMove))
+            if (validMoves.TryMoveTo(boardPosition, out nextMove))
             {
                 var capturedPiece = _chessBoard.MovePieceAndReturnCaptured(currentPiece.Position, nextMove.Destination);
 

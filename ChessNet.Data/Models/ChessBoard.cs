@@ -69,6 +69,17 @@ namespace ChessNet.Data.Models
             return pieceAtDestination;
         }
 
+        public PieceMovement MoveTo(BoardPosition position)
+        {
+            if (IsValidPosition(position))
+            {
+                var piece = GetPiece(position);
+                return new PieceMovement(position, piece);
+            }
+
+            return default;
+        }
+
         public int PieceCount
         {
             get

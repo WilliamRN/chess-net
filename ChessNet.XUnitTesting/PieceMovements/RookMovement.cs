@@ -2,11 +2,40 @@ using ChessNet.Data.Enums;
 using ChessNet.Data.Models;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
+using ChessNet.Data.Extensions;
 
-namespace ChessNet.XUnitTesting
+namespace ChessNet.XUnitTesting.PieceMovements
 {
     public class RookMovement
     {
+        [Fact]
+        public void When_MovingRook_Then_MovesAreValidated()
+        {
+            List<Piece> pieces = new List<Piece>
+            {
+                new Rook(PieceColor.White, new BoardPosition(4, 4)),
+                new Rook(PieceColor.White, new BoardPosition(4, 5)),
+                new Rook(PieceColor.Black, new BoardPosition(5, 4)),
+            };
+
+            ChessGame game = new ChessGame(pieces);
+
+            var rook = game.Board.GetPiece(4, 4);
+            var movesAvailable = rook.GetMovements(game.Board);
+
+            var isMovePastFriendPieceValid = movesAvailable.TryMoveTo(4, 6, out PieceMovement movePastFriendPiece);
+            var isMovePastEnemyPieceValid = movesAvailable.TryMoveTo(6, 4, out PieceMovement movePastEnemyPiece);
+            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(4, 5, out PieceMovement moveToCaptureFriend);
+            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(5, 4, out PieceMovement moveToCaptureEnemy);
+            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(4, 2, out PieceMovement moveToEmptyPath);
+
+            Assert.True(!isMovePastFriendPieceValid && movePastFriendPiece.IsDefault);
+            Assert.True(!isMovePastEnemyPieceValid && movePastEnemyPiece.IsDefault);
+            Assert.True(!isMoveToCaptureFriendValid && moveToCaptureFriend.IsDefault);
+            Assert.True(isMoveToCaptureEnemyValid && !moveToCaptureEnemy.IsDefault);
+            Assert.True(isMoveToEmptyPathValid && !moveToEmptyPath.IsDefault);
+        }
+
         [Fact]
         public void When_RookIsSetToCapture_Then_Capture()
         {
