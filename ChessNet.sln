@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32602.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessNet", "ChessNet\ChessNet.csproj", "{4B236CAB-AACA-4C72-BAC3-CE8F065450C6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessNet.Data", "ChessNet.Data\ChessNet.Data.csproj", "{A3C81800-EFD1-45F2-A90C-425DC5146118}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessNet.Resources", "ChessNet.Resources\ChessNet.Resources.csproj", "{072F4644-9C9C-457B-939C-4420D1A91B6D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessNet.Utilities", "ChessNet.Utilities\ChessNet.Utilities.csproj", "{134C742B-6D02-433F-A89C-3DABF9748D71}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessNet.XUnitTesting", "ChessNet.XUnitTesting\ChessNet.XUnitTesting.csproj", "{80A463B2-DACF-46FD-9B2F-C4F822738012}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4B236CAB-AACA-4C72-BAC3-CE8F065450C6} = {4B236CAB-AACA-4C72-BAC3-CE8F065450C6}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessNet.Desktop", "ChessNet.Desktop\ChessNet.Desktop.csproj", "{95AB53D1-478E-43E0-831F-953478DD5E36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4B236CAB-AACA-4C72-BAC3-CE8F065450C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B236CAB-AACA-4C72-BAC3-CE8F065450C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B236CAB-AACA-4C72-BAC3-CE8F065450C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B236CAB-AACA-4C72-BAC3-CE8F065450C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3C81800-EFD1-45F2-A90C-425DC5146118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3C81800-EFD1-45F2-A90C-425DC5146118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3C81800-EFD1-45F2-A90C-425DC5146118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3C81800-EFD1-45F2-A90C-425DC5146118}.Release|Any CPU.Build.0 = Release|Any CPU
+		{072F4644-9C9C-457B-939C-4420D1A91B6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{072F4644-9C9C-457B-939C-4420D1A91B6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{072F4644-9C9C-457B-939C-4420D1A91B6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{072F4644-9C9C-457B-939C-4420D1A91B6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{134C742B-6D02-433F-A89C-3DABF9748D71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{134C742B-6D02-433F-A89C-3DABF9748D71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{134C742B-6D02-433F-A89C-3DABF9748D71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{134C742B-6D02-433F-A89C-3DABF9748D71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80A463B2-DACF-46FD-9B2F-C4F822738012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80A463B2-DACF-46FD-9B2F-C4F822738012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80A463B2-DACF-46FD-9B2F-C4F822738012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80A463B2-DACF-46FD-9B2F-C4F822738012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95AB53D1-478E-43E0-831F-953478DD5E36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95AB53D1-478E-43E0-831F-953478DD5E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95AB53D1-478E-43E0-831F-953478DD5E36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95AB53D1-478E-43E0-831F-953478DD5E36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A9CA16B-E263-4DDB-BDC2-996635CC3479}
+	EndGlobalSection
+EndGlobal
