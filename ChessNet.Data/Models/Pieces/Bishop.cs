@@ -14,7 +14,8 @@ namespace ChessNet.Data.Models.Pieces
 
         public override IEnumerable<PieceMovement> GetMovements(ChessBoard chessBoard)
         {
-            throw new NotImplementedException();
+            return CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.DIAGONAL_STEP_FOWARD, chessBoard)
+                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.DIAGONAL_STEP_BACK, chessBoard));
         }
     }
 }

@@ -39,21 +39,34 @@ namespace ChessNet.Data.Models
             BoardPosition checkingPosition = Position;
 
             while (checkingPosition.Column >= 0 && checkingPosition.Row >= 0)
+            {
                 checkingPosition -= step;
+
+                if (chessBoard.IsValidPosition(checkingPosition) &&
+                    chessBoard.GetPiece(checkingPosition) != null)
+                    break;
+            }
+
+            BoardPosition startingPosition = checkingPosition;
 
             // Step through each step, and avoid current piece placement, stopping when out of board.
             while (checkingPosition.Column < chessBoard.Columns && checkingPosition.Row < chessBoard.Rows)
             {
-                checkingPosition += step;
-
                 if (checkingPosition == Position)
+                {
+                    checkingPosition += step;
                     continue;
+                }
 
                 var move = chessBoard.MoveTo(checkingPosition);
                 if (IsValidMove(move)) yield return move;
 
                 // Cannot move past a piece on its movement path.
-                if (move.IsValidPosition && move.PieceAtDestination != null) break;
+                if (move.IsValidPosition && 
+                    move.PieceAtDestination != null &&
+                    startingPosition != checkingPosition) break;
+
+                checkingPosition += step;
             }
         }
 

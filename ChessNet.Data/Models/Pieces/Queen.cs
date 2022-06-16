@@ -6,7 +6,7 @@ namespace ChessNet.Data.Models.Pieces
 {
     public class Queen : Piece
     {
-        public Queen(PieceColor pieceColor, BoardPosition boardPosition) 
+        public Queen(PieceColor pieceColor, BoardPosition boardPosition)
             : base(pieceColor, boardPosition, PiecePoints.QUEEN)
         {
 
@@ -14,7 +14,10 @@ namespace ChessNet.Data.Models.Pieces
 
         public override IEnumerable<PieceMovement> GetMovements(ChessBoard chessBoard)
         {
-            throw new NotImplementedException();
+            return CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.HORIZONTAL_STEP, chessBoard)
+                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.VERTICAL_STEP, chessBoard))
+                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.DIAGONAL_STEP_BACK, chessBoard))
+                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.DIAGONAL_STEP_FOWARD, chessBoard));
         }
     }
 }

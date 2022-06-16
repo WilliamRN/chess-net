@@ -1,6 +1,8 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
+using ChessNet.Data.Extensions;
 using ChessNet.Data.Structs;
+using System.Text;
 
 namespace ChessNet.Data.Models
 {
@@ -93,7 +95,7 @@ namespace ChessNet.Data.Models
             {
                 var count = 0;
 
-                foreach(Piece piece in _chessBoard)
+                foreach (Piece piece in _chessBoard)
                 {
                     if (piece != null)
                         count++;
@@ -101,6 +103,43 @@ namespace ChessNet.Data.Models
 
                 return count;
             }
+        }
+
+        public string PrintBoard()
+        {
+            StringBuilder sb = new();
+
+            sb.Append($"  ");
+
+            for (int c = 0; c < Columns; c++)
+            {
+                sb.Append($" {c.AsLetter()} ");
+            }
+
+            sb.Append($"\n");
+
+
+
+
+            for (int r = 0; r < Rows; r++)
+            {
+                sb.Append($"{r + 1} ");
+
+                for (int c = 0; c < Columns; c++)
+                {
+                    sb.Append($"[{(_chessBoard[c, r] != null ? (_chessBoard[c, r].Color == PieceColor.White ? "W" : "B") : " ")}]");
+                }
+
+                sb.Append("\n");
+            }
+
+
+
+
+
+
+
+            return sb.ToString();
         }
     }
 }
