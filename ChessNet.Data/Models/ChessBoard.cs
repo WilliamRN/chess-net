@@ -118,9 +118,6 @@ namespace ChessNet.Data.Models
 
             sb.Append($"\n");
 
-
-
-
             for (int r = 0; r < Rows; r++)
             {
                 sb.Append($"{r + 1} ");
@@ -132,12 +129,6 @@ namespace ChessNet.Data.Models
 
                 sb.Append("\n");
             }
-
-
-
-
-
-
 
             return sb.ToString();
         }
