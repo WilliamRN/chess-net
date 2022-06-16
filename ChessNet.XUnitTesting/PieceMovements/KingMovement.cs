@@ -13,21 +13,25 @@ namespace ChessNet.XUnitTesting.PieceMovements
         {
             List<Piece> pieces = new()
             {
-                new King(PieceColor.White, new BoardPosition(4, 4)),
-                new Rook(PieceColor.White, new BoardPosition(4, 5)),
-                new Rook(PieceColor.Black, new BoardPosition(5, 4)),
+                new King(PieceColor.White, new BoardPosition(0, 4)),
+                new Rook(PieceColor.White, new BoardPosition(0, 5)),
+                new Rook(PieceColor.Black, new BoardPosition(1, 4)),
             };
 
             ChessGame game = new(pieces);
 
-            var king = game.Board.GetPiece(4, 4);
+            var king = game.Board.GetPiece(0, 4);
             var movesAvailable = king.GetMovements(game.Board);
 
-            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(4, 5, out PieceMovement moveToCaptureFriend);
-            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(5, 4, out PieceMovement moveToCaptureEnemy);
-            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(4, 3, out PieceMovement moveToEmptyPath);
+            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(0, 5, out PieceMovement moveToCaptureFriend);
+            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(-1, 4, out PieceMovement moveToOutsideOfBoard);
+            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(0, 7, out PieceMovement moveToOutsideOfRange);
+            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(1, 4, out PieceMovement moveToCaptureEnemy);
+            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(0, 3, out PieceMovement moveToEmptyPath);
 
             Assert.True(!isMoveToCaptureFriendValid && moveToCaptureFriend.IsDefault);
+            Assert.True(!isMoveToOutsideOfBoardValid && moveToOutsideOfBoard.IsDefault);
+            Assert.True(!isMoveToOutsideOfRange && moveToOutsideOfRange.IsDefault);
             Assert.True(isMoveToCaptureEnemyValid && !moveToCaptureEnemy.IsDefault);
             Assert.True(isMoveToEmptyPathValid && !moveToEmptyPath.IsDefault);
         }
