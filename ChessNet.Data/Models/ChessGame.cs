@@ -62,6 +62,10 @@ namespace ChessNet.Data.Models
             PieceMovement nextMove;
 
             Piece currentPiece = _chessBoard.GetPiece(piece);
+
+            if (currentPiece.Color != CurrentPlayer.Color)
+                throw new InvalidOperationException($"invalid player piece, expected a {CurrentPlayer.Color} piece but got a {piece.Color} {piece.Type}");
+
             var validMoves = currentPiece.GetMovements(_chessBoard);
 
             if (validMoves.TryGetAt(boardPosition, out nextMove))
@@ -70,6 +74,8 @@ namespace ChessNet.Data.Models
 
                 if (nextMove.IsCapture && capturedPiece != null)
                     CurrentPlayer.Points += capturedPiece.Points;
+
+                _turn = CurrentPlayer.Color == PieceColor.Black ? PieceColor.White : PieceColor.Black;
 
                 return true;
             }

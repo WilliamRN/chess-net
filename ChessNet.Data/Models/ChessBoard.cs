@@ -6,11 +6,16 @@ namespace ChessNet.Data.Models
 {
     public class ChessBoard
     {
+        public int Columns { get; private set; }
+        public int Rows { get; private set; }
+
         private Piece[,] _chessBoard { get; set; }
 
         public ChessBoard()
         {
-            _chessBoard = new Piece[DefaultValues.BOARD_SIZE, DefaultValues.BOARD_SIZE];
+            Columns = DefaultValues.BOARD_SIZE;
+            Rows = DefaultValues.BOARD_SIZE;
+            _chessBoard = new Piece[Columns, Rows];
         }
 
         public bool AddPiece(Piece piece)
@@ -59,6 +64,7 @@ namespace ChessNet.Data.Models
 
             _chessBoard[from.Column, from.Row] = null;
             _chessBoard[to.Column, to.Row] = originPiece;
+            originPiece.Position = to;
 
             return pieceAtDestination;
         }

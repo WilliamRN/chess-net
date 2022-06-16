@@ -11,10 +11,10 @@ namespace ChessNet.XUnitTesting
         public void When_BoardIsInitialized_Then_MovePawn()
         {
             ChessGame game = new ChessGame();
+
             var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn) as Pawn;
             var validMoves = pawn.GetMovements(game.Board).ToList();
-
-            bool isValidMove = game.MovePiece(pawn, validMoves.First().Destination);
+            var isValidMove = game.MovePiece(pawn, validMoves.First().Destination);
 
             Assert.True(validMoves.Count() > 1);
             Assert.True(isValidMove);
@@ -23,7 +23,6 @@ namespace ChessNet.XUnitTesting
         [Fact]
         public void When_BoardIsInitializedToCapture_Then_MovePawnToCapture()
         {
-            int previousCount, nextCount;
             List<Piece> pieces = new List<Piece>
             {
                 new Pawn(PieceColor.White, new BoardPosition(4, 4)),
@@ -31,17 +30,16 @@ namespace ChessNet.XUnitTesting
             };
 
             ChessGame game = new ChessGame(pieces);
-            previousCount = game.Board.PieceCount;
+
+            var previousCount = game.Board.PieceCount;
             var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn) as Pawn;
+            var previousPosition = pawn.Position;
             var validMoves = pawn.GetMovements(game.Board).ToList();
             var captureMove = validMoves.Where(m => m.IsCapture).FirstOrDefault();
+            var isValidMove = game.MovePiece(pawn, captureMove.Destination);
 
-            bool isValidMove = game.MovePiece(pawn, captureMove.Destination);
-
-            nextCount = game.Board.PieceCount;
-
-            Assert.True(nextCount < previousCount);
-            Assert.True(captureMove.IsCapture && captureMove.Destination.Column != pawn.Position.Column);
+            Assert.True(game.Board.PieceCount < previousCount);
+            Assert.True(captureMove.IsCapture && previousPosition != pawn.Position);
             Assert.True(validMoves.Count() > 1);
             Assert.True(isValidMove);
         }
