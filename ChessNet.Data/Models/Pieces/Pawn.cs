@@ -24,8 +24,6 @@ namespace ChessNet.Data.Models.Pieces
             PieceMovement move;
             var isPieceAhead = false;
 
-            // TODO: Promotion to Queen, at board edge.
-
             // Can move but not capture ahead
             position = Position.GetOffset(0, PawnStep);
             move = ChessBoard.MoveTo(position);
