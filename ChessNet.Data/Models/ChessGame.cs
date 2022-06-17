@@ -46,16 +46,20 @@ namespace ChessNet.Data.Models
         {
             PieceMovement nextMove;
 
-            Piece currentPiece = _chessBoard.GetPiece(piece);
+            if (piece == null)
+                throw new ArgumentNullException(nameof(piece), "piece cannot be empty");
 
-            if (currentPiece.Color != CurrentPlayer.Color)
+            if (!piece.IsInChessBoard)
+                throw new InvalidOperationException("piece is not on the board");
+
+            if (piece.Color != CurrentPlayer.Color)
                 throw new InvalidOperationException($"invalid player piece, expected a {CurrentPlayer.Color} piece but got a {piece.Color} {piece.GetType().Name}");
 
-            var validMoves = currentPiece.GetMovements();
+            var validMoves = piece.GetMovements();
 
             if (validMoves.TryMoveTo(boardPosition, out nextMove))
             {
-                var capturedPiece = _chessBoard.MovePieceAndReturnCaptured(currentPiece.Position, nextMove.Destination);
+                var capturedPiece = _chessBoard.MovePieceAndReturnCaptured(piece, nextMove);
 
                 if (nextMove.IsCaptureFor(CurrentPlayer.Color))
                     CurrentPlayer.Points += capturedPiece.Points;

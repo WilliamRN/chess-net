@@ -12,6 +12,8 @@ namespace ChessNet.Data.Models
         public int Rows { get; private set; }
 
         private Piece[,] _chessBoard { get; set; }
+        public PieceMovement LastMove { get; private set; }
+        public object LastMovedPiece { get; private set; }
 
         public ChessBoard()
         {
@@ -67,19 +69,25 @@ namespace ChessNet.Data.Models
         public bool IsValidPosition(Piece piece) =>
             IsValidPosition(piece.Position.Column, piece.Position.Row);
 
-        public Piece MovePieceAndReturnCaptured(BoardPosition from, BoardPosition to)
+        public Piece MovePieceAndReturnCaptured<T>(T piece, PieceMovement pieceMovement) where T : Piece
         {
-            Piece pieceAtDestination = _chessBoard[to.Column, to.Row];
+            BoardPosition from = piece.Position;
+            BoardPosition to = pieceMovement.Destination;
+
+            Piece destinationPiece = _chessBoard[to.Column, to.Row];
             Piece originPiece = _chessBoard[from.Column, from.Row];
 
             _chessBoard[from.Column, from.Row] = null;
             _chessBoard[to.Column, to.Row] = originPiece;
-            originPiece.Position = to;
-            
-            if (pieceAtDestination != null)
-                pieceAtDestination.ChessBoard = null;
+            piece.Position = originPiece.Position = to;
 
-            return pieceAtDestination;
+            if (destinationPiece != null)
+                destinationPiece.ChessBoard = null;
+
+            LastMove = pieceMovement;
+            LastMovedPiece = piece;
+
+            return destinationPiece;
         }
 
         public PieceMovement MoveTo(BoardPosition position)

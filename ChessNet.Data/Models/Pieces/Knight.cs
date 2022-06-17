@@ -31,11 +31,6 @@ namespace ChessNet.Data.Models.Pieces
         {
             if (!IsInChessBoard) yield break;
 
-            // TODO: Castling
-            // Castling may be done only if neither the king nor the rook has previously moved,
-            // the squares between the king and the rook are unoccupied, the king is not in check,
-            // and the king does not cross over or end up on a square attacked by an opposing piece.
-
             foreach (var validOffset in ValidMoveOffsets)
             {
                 if (TryGetValidPieceMovement(validOffset, out PieceMovement value))
