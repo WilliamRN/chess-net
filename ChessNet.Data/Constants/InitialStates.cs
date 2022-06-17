@@ -7,7 +7,7 @@ namespace ChessNet.Data.Constants
 {
     public static class InitialStates
     {
-        public static IEnumerable<Piece> DEFAULT = new List<Piece>
+        public static readonly IEnumerable<Piece> DEFAULT = new List<Piece>
         {
             // White
             new Rook(PieceColor.White, new BoardPosition(0, 0)),
