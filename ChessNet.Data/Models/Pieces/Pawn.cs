@@ -12,8 +12,10 @@ namespace ChessNet.Data.Models.Pieces
 
         }
 
-        public override IEnumerable<PieceMovement> GetMovements(ChessBoard chessBoard)
+        public override IEnumerable<PieceMovement> GetMovements()
         {
+            if (!IsInChessBoard) yield break;
+
             BoardPosition position;
             PieceMovement move;
             var isPieceAhead = false;
@@ -23,7 +25,7 @@ namespace ChessNet.Data.Models.Pieces
 
             // Can move but not capture ahead
             position = Position.GetOffset(0, IsWhite ? 1 : -1);
-            move = chessBoard.MoveTo(position);
+            move = ChessBoard.MoveTo(position);
 
             if (IsValidMove(move))
                 yield return move;
@@ -34,7 +36,7 @@ namespace ChessNet.Data.Models.Pieces
             if (IsFirstMove && !isPieceAhead)
             {
                 position = Position.GetOffset(0, IsWhite ? 2 : -2);
-                move = chessBoard.MoveTo(position);
+                move = ChessBoard.MoveTo(position);
 
                 if(IsValidMove(move))
                     yield return move;
@@ -42,11 +44,11 @@ namespace ChessNet.Data.Models.Pieces
 
             // Can only capture on imediate diagonals
             position = Position.GetOffset(1, IsWhite ? 1 : -1);
-            move = chessBoard.MoveTo(position);
+            move = ChessBoard.MoveTo(position);
             if (IsValidCapture(move)) yield return move;
 
             position = Position.GetOffset(-1, IsWhite ? 1 : -1);
-            move = chessBoard.MoveTo(position);
+            move = ChessBoard.MoveTo(position);
             if (IsValidCapture(move)) yield return move;
         }
 

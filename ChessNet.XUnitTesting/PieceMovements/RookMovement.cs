@@ -21,7 +21,7 @@ namespace ChessNet.XUnitTesting.PieceMovements
             ChessGame game = new(pieces);
 
             var rook = game.Board.GetPiece(4, 4);
-            var movesAvailable = rook.GetMovements(game.Board);
+            var movesAvailable = rook.GetMovements();
 
             var isMovePastFriendPieceValid = movesAvailable.TryMoveTo(4, 6, out PieceMovement movePastFriendPiece);
             var isMovePastEnemyPieceValid = movesAvailable.TryMoveTo(6, 4, out PieceMovement movePastEnemyPiece);
@@ -51,13 +51,13 @@ namespace ChessNet.XUnitTesting.PieceMovements
             var previousCount = game.Board.PieceCount;
             var rook = game.CurrentPlayer.Pieces.First(p => p is Rook) as Rook;
             var previousPosition = rook.Position;
-            var validMoves = rook.GetMovements(game.Board).ToList();
+            var validMoves = rook.GetMovements().ToList();
             var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
             var isValidMove = game.MovePiece(rook, captureMove.Destination);
 
             Assert.True(game.Board.PieceCount < previousCount);
             Assert.True(captureMove.IsCaptureFor(startingPlayerColor) && previousPosition != rook.Position);
-            Assert.True(validMoves.Count > 1);
+            Assert.True(validMoves.Count() > 1);
             Assert.True(isValidMove);
         }
 
@@ -79,7 +79,7 @@ namespace ChessNet.XUnitTesting.PieceMovements
 
             // Ensure white rook cannot capture black pawn.
             var isSetToCaptureBeforeMove = rook
-                .GetMovements(game.Board)
+                .GetMovements()
                 .Where(m => m.IsCaptureFor(PieceColor.White))
                 .Any();
 
@@ -89,13 +89,13 @@ namespace ChessNet.XUnitTesting.PieceMovements
             // Move black pawn ahead.
             var blackPawn = game.CurrentPlayer.Pieces.First(p => p is Pawn) as Pawn;
 
-            game.MovePiece(blackPawn, blackPawn.GetMovements(game.Board).First().Destination);
+            game.MovePiece(blackPawn, blackPawn.GetMovements().First().Destination);
 
             // Capture with white rook.
             var rookAfterMove = game.CurrentPlayer.Pieces.First(p => p is Rook) as Rook;
 
             var captureMove = rookAfterMove
-                .GetMovements(game.Board)
+                .GetMovements()
                 .Where(m => m.IsCaptureFor(PieceColor.White))
                 .FirstOrDefault();
 

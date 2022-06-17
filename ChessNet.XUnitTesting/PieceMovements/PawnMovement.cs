@@ -22,7 +22,7 @@ namespace ChessNet.XUnitTesting.PieceMovements
             ChessGame game = new(pieces);
 
             var pawn = game.Board.GetPiece(4, 4);
-            var movesAvailable = pawn.GetMovements(game.Board);
+            var movesAvailable = pawn.GetMovements();
 
             var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(5, 5, out PieceMovement moveToCaptureFriend);
             var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(4, 9, out PieceMovement moveToOutsideOfBoard);
@@ -52,13 +52,13 @@ namespace ChessNet.XUnitTesting.PieceMovements
             var previousCount = game.Board.PieceCount;
             var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn);
             var previousPosition = pawn.Position;
-            var validMoves = pawn.GetMovements(game.Board).ToList();
+            var validMoves = pawn.GetMovements().ToList();
             var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
             var isValidMove = game.MovePiece(pawn, captureMove.Destination);
 
             Assert.True(game.Board.PieceCount < previousCount);
             Assert.True(captureMove.IsCaptureFor(startingPlayerColor) && previousPosition != pawn.Position);
-            Assert.True(validMoves.Count > 1);
+            Assert.True(validMoves.Count() > 1);
             Assert.True(isValidMove);
         }
     }

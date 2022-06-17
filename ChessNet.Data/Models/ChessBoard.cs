@@ -26,6 +26,7 @@ namespace ChessNet.Data.Models
                 GetPiece(piece.Position) == null)
             {
                 _chessBoard[piece.Position.Column, piece.Position.Row] = piece;
+                piece.ChessBoard = this;
                 return true;
             }
 
@@ -74,6 +75,9 @@ namespace ChessNet.Data.Models
             _chessBoard[from.Column, from.Row] = null;
             _chessBoard[to.Column, to.Row] = originPiece;
             originPiece.Position = to;
+            
+            if (pieceAtDestination != null)
+                pieceAtDestination.ChessBoard = null;
 
             return pieceAtDestination;
         }

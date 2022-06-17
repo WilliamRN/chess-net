@@ -13,7 +13,7 @@ namespace ChessNet.XUnitTesting
             ChessGame game = new();
 
             var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn);
-            var validMoves = pawn.GetMovements(game.Board).ToList();
+            var validMoves = pawn.GetMovements().ToList();
             var isValidMove = game.MovePiece(pawn, validMoves.First().Destination);
 
             Assert.True(validMoves.Count() > 1);
@@ -35,7 +35,7 @@ namespace ChessNet.XUnitTesting
             var previousCount = game.Board.PieceCount;
             var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn) as Pawn;
             var previousPosition = pawn.Position;
-            var validMoves = pawn.GetMovements(game.Board).ToList();
+            var validMoves = pawn.GetMovements().ToList();
             var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
             var isValidMove = game.MovePiece(pawn, captureMove.Destination);
 

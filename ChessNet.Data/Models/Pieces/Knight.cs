@@ -27,8 +27,10 @@ namespace ChessNet.Data.Models.Pieces
 
         }
 
-        public override IEnumerable<PieceMovement> GetMovements(ChessBoard chessBoard)
+        public override IEnumerable<PieceMovement> GetMovements()
         {
+            if (!IsInChessBoard) yield break;
+
             // TODO: Castling
             // Castling may be done only if neither the king nor the rook has previously moved,
             // the squares between the king and the rook are unoccupied, the king is not in check,
@@ -36,7 +38,7 @@ namespace ChessNet.Data.Models.Pieces
 
             foreach (var validOffset in ValidMoveOffsets)
             {
-                if (TryGetValidPieceMovement(validOffset, chessBoard, out PieceMovement value))
+                if (TryGetValidPieceMovement(validOffset, out PieceMovement value))
                     yield return value;
             }
         }

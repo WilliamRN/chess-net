@@ -12,12 +12,14 @@ namespace ChessNet.Data.Models.Pieces
 
         }
 
-        public override IEnumerable<PieceMovement> GetMovements(ChessBoard chessBoard)
+        public override IEnumerable<PieceMovement> GetMovements()
         {
-            return CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.HORIZONTAL_STEP, chessBoard)
-                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.VERTICAL_STEP, chessBoard))
-                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.DIAGONAL_STEP_BACK, chessBoard))
-                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.DIAGONAL_STEP_FOWARD, chessBoard));
+            if (!IsInChessBoard) return default;
+
+            return CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.HORIZONTAL_STEP)
+                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.VERTICAL_STEP))
+                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.DIAGONAL_STEP_BACK))
+                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.DIAGONAL_STEP_FOWARD));
         }
     }
 }

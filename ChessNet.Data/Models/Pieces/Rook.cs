@@ -12,15 +12,17 @@ namespace ChessNet.Data.Models.Pieces
 
         }
 
-        public override IEnumerable<PieceMovement> GetMovements(ChessBoard chessBoard)
+        public override IEnumerable<PieceMovement> GetMovements()
         {
+            if (!IsInChessBoard) return default;
+
             // TODO: Castling
             // Castling may be done only if neither the king nor the rook has previously moved,
             // the squares between the king and the rook are unoccupied, the king is not in check,
             // and the king does not cross over or end up on a square attacked by an opposing piece.
 
-            return CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.HORIZONTAL_STEP, chessBoard)
-                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.VERTICAL_STEP, chessBoard));
+            return CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.HORIZONTAL_STEP)
+                .Concat(CheckLineOfPositionsBasedOnPathStep(BoardDirectionSteps.VERTICAL_STEP));
         }
     }
 }

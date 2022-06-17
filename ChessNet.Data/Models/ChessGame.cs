@@ -51,7 +51,7 @@ namespace ChessNet.Data.Models
             if (currentPiece.Color != CurrentPlayer.Color)
                 throw new InvalidOperationException($"invalid player piece, expected a {CurrentPlayer.Color} piece but got a {piece.Color} {piece.GetType().Name}");
 
-            var validMoves = currentPiece.GetMovements(_chessBoard);
+            var validMoves = currentPiece.GetMovements();
 
             if (validMoves.TryMoveTo(boardPosition, out nextMove))
             {
