@@ -2,9 +2,9 @@ using ChessNet.Data.Enums;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 
-namespace ChessNet.XUnitTesting
+namespace ChessNet.XUnitTesting.Structs
 {
-    public class Structs
+    public class PieceMovements
     {
         [Fact]
         public void When_PieceMovementIsDefinedToPosition_Then_NotDefault()

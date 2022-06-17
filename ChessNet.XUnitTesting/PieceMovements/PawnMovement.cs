@@ -61,5 +61,38 @@ namespace ChessNet.XUnitTesting.PieceMovements
             Assert.True(validMoves.Count() > 1);
             Assert.True(isValidMove);
         }
+
+        [Fact]
+        public void When_PawnIsSetToEnPassant_Then_Capture()
+        {
+            List<Piece> pieces = new()
+            {
+                new Pawn(PieceColor.White, new BoardPosition("E4")),
+                new Pawn(PieceColor.Black, new BoardPosition("F7")),
+            };
+
+            ChessGame game = new(pieces);
+            var previousCount = game.Board.PieceCount;
+
+            // White Pawn has moved to the spot where the black Pawn must move two spaces to.
+            var whitePawn = game.CurrentPlayer.Pieces.First(p => p is Pawn);
+            game.MovePiece(whitePawn, new BoardPosition("E5"));
+
+            // Black Pawn moves two spaces from starting position.
+            var blackPawn = game.CurrentPlayer.Pieces.First(p => p is Pawn);
+            game.MovePiece(blackPawn, new BoardPosition("F5"));
+
+            // List of valid moves should include en passant.
+            var validMoves = whitePawn.GetMovements().ToList();
+
+            var isEnPassantAvailable = validMoves.Any(m => m.IsEnPassant);
+            var isEnPassandValid = game.MovePiece(whitePawn, validMoves.First(m => m.IsEnPassant).Destination);
+
+            Assert.True(isEnPassantAvailable);
+            Assert.True(validMoves.Count() > 1);
+            Assert.True(isEnPassantAvailable);
+            Assert.True(isEnPassandValid);
+            Assert.Equal(new BoardPosition("F6"), whitePawn.Position);
+        }
     }
 }

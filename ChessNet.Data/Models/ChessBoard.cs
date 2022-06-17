@@ -1,6 +1,7 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
 using ChessNet.Data.Extensions;
+using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using System.Text;
 
@@ -71,8 +72,17 @@ namespace ChessNet.Data.Models
 
         public Piece MovePieceAndReturnCaptured<T>(T piece, PieceMovement pieceMovement) where T : Piece
         {
+            if (pieceMovement.IsEnPassant && piece is Pawn)
+                return EnPassantAndReturnCaptured(piece as Pawn, pieceMovement);
+
             BoardPosition from = piece.Position;
             BoardPosition to = pieceMovement.Destination;
+
+            if (piece is Pawn && Math.Abs(to.Row - from.Row) == 2)
+            {
+                var pieceAsPawn = piece as Pawn;
+                pieceAsPawn.IsLastMoveTwoSpaces = true;
+            }
 
             Piece destinationPiece = _chessBoard[to.Column, to.Row];
             Piece originPiece = _chessBoard[from.Column, from.Row];
@@ -88,6 +98,28 @@ namespace ChessNet.Data.Models
             LastMovedPiece = piece;
 
             return destinationPiece;
+        }
+
+        public Piece EnPassantAndReturnCaptured(Pawn piece, PieceMovement pieceMovement)
+        {
+            BoardPosition from = piece.Position;
+            BoardPosition to = pieceMovement.Destination;
+            BoardPosition capturedFrom = pieceMovement.PieceAtDestination.Position;
+
+            Piece originPiece = _chessBoard[from.Column, from.Row];
+            Piece capturedPiece = _chessBoard[capturedFrom.Column, capturedFrom.Row];
+
+            _chessBoard[capturedFrom.Column, capturedFrom.Row] = null;
+            _chessBoard[from.Column, from.Row] = null;
+            _chessBoard[to.Column, to.Row] = originPiece;
+            piece.Position = originPiece.Position = to;
+
+            capturedPiece.ChessBoard = null;
+
+            LastMove = pieceMovement;
+            LastMovedPiece = piece;
+
+            return capturedPiece;
         }
 
         public PieceMovement MoveTo(BoardPosition position)
@@ -125,12 +157,12 @@ namespace ChessNet.Data.Models
 
             for (int c = 0; c < Columns; c++)
             {
-                sb.Append($" {c.AsLetter()} ");
+                sb.Append($" {c.ToColumnAnnotation()} ");
             }
 
             sb.Append($"\n");
 
-            for (int r = 0; r < Rows; r++)
+            for (int r = Rows - 1; r >= 0; r--)
             {
                 sb.Append($"{r + 1} ");
 

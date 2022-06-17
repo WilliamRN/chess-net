@@ -11,11 +11,13 @@ namespace ChessNet.Data.Structs
 
         public BoardPosition Destination;
         public Piece PieceAtDestination;
+        public bool IsEnPassant { get; private set; }
 
-        public PieceMovement(BoardPosition boardPosition, Piece piece = null)
+        public PieceMovement(BoardPosition boardPosition, Piece piece = null, bool isEnPassant = false)
         {
             Destination = boardPosition;
             PieceAtDestination = piece;
+            IsEnPassant = isEnPassant;
             _isPopulated = true;
         }
 

@@ -1,4 +1,5 @@
 ﻿using ChessNet.Data.Extensions;
+using ChessNet.Data.Utils;
 using System.Diagnostics;
 
 namespace ChessNet.Data.Structs
@@ -9,11 +10,38 @@ namespace ChessNet.Data.Structs
         public int Column;
         public int Row;
 
+        private readonly bool _isPopulated;
+
         public BoardPosition(int column, int row)
         {
             Column = column;
             Row = row;
+
+            _isPopulated = true;
         }
+
+        public BoardPosition(string positionAnnotation)
+        {
+            if (string.IsNullOrWhiteSpace(positionAnnotation))
+                throw new ArgumentNullException(nameof(positionAnnotation), "position cannot be empty");
+
+            Column = positionAnnotation
+                .GetLettersOnly()
+                .ToColumnInteger();
+
+            var isValidRow = int.TryParse(positionAnnotation.GetNumbersOnly(), out Row);
+            Row -= 1;
+
+            if (Column < 0)
+                throw new InvalidOperationException("invalid column annotation");
+
+            if (Row < 0 || !isValidRow)
+                throw new InvalidOperationException("invalid row annotation");
+
+            _isPopulated = true;
+        }
+
+        public bool IsDefault => !_isPopulated;
 
         public BoardPosition GetOffset(int offsetColumBy, int offsetRowBy)
         {
@@ -25,7 +53,7 @@ namespace ChessNet.Data.Structs
 
         public string AsString()
         {
-            return $"{Column.AsLetter()}{Row + 1}";
+            return $"{Column.ToColumnAnnotation()}{Row + 1}";
         }
 
         public static bool operator ==(BoardPosition left, BoardPosition right)

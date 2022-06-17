@@ -23,8 +23,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ChessNet.Data\ChessNet.Data.csproj" />
-    <ProjectReference Include="..\ChessNet.Utilities\ChessNet.Utilities.csproj" />
     <ProjectReference Include="..\ChessNet\ChessNet.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Utils\" />
   </ItemGroup>
 
 </Project>
