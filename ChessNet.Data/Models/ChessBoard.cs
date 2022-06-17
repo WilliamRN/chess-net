@@ -36,6 +36,23 @@ namespace ChessNet.Data.Models
             return false;
         }
 
+        public bool RemovePiece(Piece piece)
+        {
+            if (IsValidPosition(piece.Position))
+            {
+                var currentPiece = GetPiece(piece.Position);
+
+                if (currentPiece != null)
+                {
+                    _chessBoard[currentPiece.Position.Column, currentPiece.Position.Row] = null;
+                    piece.ChessBoard = currentPiece.ChessBoard = null;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public IEnumerable<Piece> GetPieces(PieceColor pieceColor)
         {
             return _chessBoard

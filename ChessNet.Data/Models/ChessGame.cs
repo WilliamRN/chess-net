@@ -1,6 +1,7 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
 using ChessNet.Data.Extensions;
+using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 
 namespace ChessNet.Data.Models
@@ -64,12 +65,25 @@ namespace ChessNet.Data.Models
                 if (nextMove.IsCaptureFor(CurrentPlayer.Color))
                     CurrentPlayer.Points += capturedPiece.Points;
 
+                if (piece is Pawn &&
+                    (piece.Position.Row == _chessBoard.Rows - 1 ||
+                    piece.Position.Row == 0))
+                {
+                    PromotePawnToQueen(piece as Pawn);
+                }
+
                 _turn = CurrentPlayer.Color == PieceColor.Black ? PieceColor.White : PieceColor.Black;
 
                 return true;
             }
             else
                 return false;
+        }
+
+        private void PromotePawnToQueen(Pawn pawn)
+        {
+            _chessBoard.RemovePiece(pawn);
+            _chessBoard.AddPiece(new Queen(pawn.Color, pawn.Position));
         }
     }
 }

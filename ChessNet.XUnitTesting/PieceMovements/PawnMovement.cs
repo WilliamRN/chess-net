@@ -94,5 +94,35 @@ namespace ChessNet.XUnitTesting.PieceMovements
             Assert.True(isEnPassandValid);
             Assert.Equal(new BoardPosition("F6"), whitePawn.Position);
         }
+
+        [Fact]
+        public void When_PawnReachesEdgeOfBoard_Then_PromotoToQueen()
+        {
+            List<Piece> pieces = new()
+            {
+                new Pawn(PieceColor.White, new BoardPosition("E7")),
+                new Pawn(PieceColor.Black, new BoardPosition("B7")),
+            };
+
+            ChessGame game = new(pieces);
+            var startCount = game.Board.PieceCount;
+
+            var whitePieceAtStart = game.CurrentPlayer.Pieces.First();
+            game.MovePiece(whitePieceAtStart, new BoardPosition("E8"));
+
+            var blackPawn = game.CurrentPlayer.Pieces.First(p => p is Pawn);
+            game.MovePiece(blackPawn, new BoardPosition("B6"));
+
+            var whitePieceAtEnd = game.CurrentPlayer.Pieces.First();
+
+            var queenMoves = whitePieceAtEnd.GetMovements().ToList();
+            var endCount = game.Board.PieceCount;
+
+            Assert.True(startCount == 2);
+            Assert.True(whitePieceAtStart is Pawn);
+            Assert.True(queenMoves.Count() > 7);
+            Assert.True(whitePieceAtEnd is Queen);
+            Assert.True(endCount == 2);
+        }
     }
 }
