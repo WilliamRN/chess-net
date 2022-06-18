@@ -48,8 +48,8 @@ namespace ChessNet.ConsoleGame
             Console.Write(sb.ToString());
 
             PlayerName = Console.ReadLine() ?? "";
-            PlayerName = string.IsNullOrWhiteSpace(PlayerName) 
-                ? (isWhite ? DefaultValues.PLAYER_1 : DefaultValues.PLAYER_2) 
+            PlayerName = string.IsNullOrWhiteSpace(PlayerName)
+                ? (isWhite ? DefaultValues.PLAYER_1 : DefaultValues.PLAYER_2)
                 : PlayerName;
 
             return PlayerName;
@@ -58,7 +58,7 @@ namespace ChessNet.ConsoleGame
         public void PrintSettingUpBoard()
         {
             StringBuilder sb = new StringBuilder();
-            
+
             sb.AppendLine("");
             sb.AppendLine("Ok!");
             sb.AppendLine("Setting the board...");
@@ -107,11 +107,14 @@ namespace ChessNet.ConsoleGame
 
             to = Console.ReadLine() ?? "";
 
-            sb.Clear();
-            sb.AppendLine($"Moving from {from} to {to}!");
-            Console.Write(sb.ToString());
+            if (DefaultValues.ACTION_DELAY > 100)
+            {
+                sb.Clear();
+                sb.AppendLine($"Moving from {from} to {to}!");
+                Console.Write(sb.ToString());
 
-            Thread.Sleep(DefaultValues.ACTION_DELAY);
+                Thread.Sleep(DefaultValues.ACTION_DELAY);
+            }
 
             return gameManager.MakeMove(from, to);
         }
