@@ -78,11 +78,9 @@ namespace ChessNet.Data.Models.Pieces
                     BoardPosition rookCastlingPosition = new(Position.Column + step, Position.Row);
                     BoardPosition kingCastlingPosition = new(Position.Column + (step * 2), Position.Row);
 
-                    List<Piece> piecesToIgnore = new(){ this, rook };
-
                     // The king does not cross over or end up on a square attacked by an opposing piece.
-                    if (!ChessBoard.AttackersFor(Color, rookCastlingPosition, piecesToIgnore).Any() &&
-                        !ChessBoard.AttackersFor(Color, kingCastlingPosition, piecesToIgnore).Any())
+                    if (!ChessBoard.AttackersFor(rook, rookCastlingPosition).Any() &&
+                        !ChessBoard.AttackersFor(this, kingCastlingPosition).Any())
                     {
                         yield return new PieceMovement(kingCastlingPosition, rook, isCastling: true);
                     }
@@ -104,6 +102,32 @@ namespace ChessNet.Data.Models.Pieces
                 if (attacker != null && attacker is King && attacker.Color == attackerColor)
                     yield return attacker as King;
             }
+        }
+
+        public bool IsCheck()
+        {
+            // A king that is under attack is said to be in check, and the player in check
+            // must immediately remedy the situation. There are three possible ways to remove
+            // the king from check:
+
+            //      The king is moved to an adjacent non - threatened square.A king cannot castle
+            //      to get out of check. A king can capture an adjacent enemy piece if that piece
+            //      is not protected by another enemy piece.
+
+            //      A piece is interposed between the king and the attacking piece to break the
+            //      line of threat (not possible when the attacking piece is a knight or pawn, or
+            //      when in double check).
+
+            //      The attacking piece is captured(not possible when in double check, unless the
+            //      king captures).
+
+            // If none of the three options are available, the player's king has been checkmated,
+            // and the player loses the game.
+
+            // At amateur levels, when placing the opponent's king in check, it is common to
+            // announce "check", but this is not required by the rules of chess.
+
+            throw new NotImplementedException();
         }
     }
 }

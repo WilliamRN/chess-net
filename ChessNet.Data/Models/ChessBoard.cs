@@ -188,48 +188,34 @@ namespace ChessNet.Data.Models
             }
         }
 
-        public IEnumerable<Piece> AttackersFor(PieceColor color, BoardPosition position, IEnumerable<Piece> piecesToIgnore = null)
+        public IEnumerable<Piece> AttackersFor(Piece piece, BoardPosition position)
         {
             IEnumerable<Piece> result = new List<Piece>();
-            ChessBoard boardWithoutIngoredPieces;
+            ChessBoard previewBoard;
 
-            if (piecesToIgnore != null && piecesToIgnore.Any())
+            if (piece.Position != position)
             {
-                boardWithoutIngoredPieces = this.Clone() as ChessBoard;
+                previewBoard = this.Clone() as ChessBoard;
 
-                foreach(Piece toIgnore in piecesToIgnore)
-                {
-                    var atPosition = GetPiece(toIgnore.Position);
-
-                    if (atPosition != null)
-                        boardWithoutIngoredPieces._board[atPosition.Position.Column, atPosition.Position.Row] = null;
-                }
+                previewBoard._board[piece.Position.Column, piece.Position.Row] = null;
+                previewBoard._board[position.Column, position.Row] = piece;
             }
             else
             {
-                boardWithoutIngoredPieces = this;
+                previewBoard = this;
             }
 
             return result
-                .Concat(King.GetKingAttackersFor(boardWithoutIngoredPieces, color, position))
-                .Concat(Pawn.GetPawnAttackersFor(boardWithoutIngoredPieces, color, position))
-                .Concat(Knight.GetKnightAttackersFor(boardWithoutIngoredPieces, color, position))
-                .Concat(Bishop.GetBishopAttackersFor(boardWithoutIngoredPieces, color, position))
-                .Concat(Rook.GetRookAttackersFor(boardWithoutIngoredPieces, color, position))
-                .Concat(Queen.GetQueenAttackersFor(boardWithoutIngoredPieces, color, position));
+                .Concat(King.GetKingAttackersFor(previewBoard, piece.Color, position))
+                .Concat(Pawn.GetPawnAttackersFor(previewBoard, piece.Color, position))
+                .Concat(Knight.GetKnightAttackersFor(previewBoard, piece.Color, position))
+                .Concat(Bishop.GetBishopAttackersFor(previewBoard, piece.Color, position))
+                .Concat(Rook.GetRookAttackersFor(previewBoard, piece.Color, position))
+                .Concat(Queen.GetQueenAttackersFor(previewBoard, piece.Color, position));
         }
 
-        public IEnumerable<Piece> AttackersFor(Piece piece)
-        {
-            // Ignore current piece when checking for attackers at new position.
-            return AttackersFor(piece.Color, piece.Position, new List<Piece> { piece });
-        }
-
-        public IEnumerable<Piece> AttackersFor(Piece piece, BoardPosition position)
-        {
-            // Ignore current piece when checking for attackers at new position.
-            return AttackersFor(piece.Color, position, new List<Piece> { piece });
-        }
+        public IEnumerable<Piece> AttackersFor(Piece piece) => 
+            AttackersFor(piece, piece.Position);
 
         public string Print()
         {
