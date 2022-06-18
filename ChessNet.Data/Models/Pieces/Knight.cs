@@ -6,21 +6,6 @@ namespace ChessNet.Data.Models.Pieces
 {
     public class Knight : Piece
     {
-        private static readonly IEnumerable<BoardPosition> ValidMoveOffsets = new List<BoardPosition>()
-        {
-            new BoardPosition(1, 2),
-            new BoardPosition(2, 1),
-
-            new BoardPosition(2, -1),
-            new BoardPosition(1, -2),
-
-            new BoardPosition(-1, -2),
-            new BoardPosition(-2, -1),
-
-            new BoardPosition(-2, 1),
-            new BoardPosition(-1, 2),
-        };
-
         public Knight(PieceColor pieceColor, BoardPosition boardPosition) 
             : base(pieceColor, boardPosition, PiecePoints.KNIGHT)
         {
@@ -31,7 +16,7 @@ namespace ChessNet.Data.Models.Pieces
         {
             if (!IsInChessBoard) yield break;
 
-            foreach (var validOffset in ValidMoveOffsets)
+            foreach (var validOffset in MoveOffsets.KNIGHT)
             {
                 if (TryGetValidPieceMovement(validOffset, out PieceMovement value))
                     yield return value;

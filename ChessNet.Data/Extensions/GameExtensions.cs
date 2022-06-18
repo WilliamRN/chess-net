@@ -68,15 +68,12 @@ namespace ChessNet.Data.Extensions
             pieceMovement = default;
             bool result = false;
 
-            if (pieceMovements == null || !pieceMovements.Any()) return result;
+            var list = pieceMovements.ToList();
 
-            if (pieceMovements.Any(m => m.Destination.Column == column && m.Destination.Row == row))
-            {
-                pieceMovement = pieceMovements
-                    .First(m => m.Destination.Column == column && m.Destination.Row == row);
+            if (list == null || !list.Any()) return result;
 
-                result = true;
-            }
+            pieceMovement = list.FirstOrDefault(m => m.Destination.Column == column && m.Destination.Row == row);
+            result = !pieceMovement.IsDefault;
 
             return result;
         }

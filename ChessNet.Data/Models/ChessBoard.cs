@@ -90,7 +90,10 @@ namespace ChessNet.Data.Models
         public Piece MovePieceAndReturnCaptured<T>(T piece, PieceMovement pieceMovement) where T : Piece
         {
             if (pieceMovement.IsEnPassant && piece is Pawn)
-                return EnPassantAndReturnCaptured(piece as Pawn, pieceMovement);
+                return MoveEnPassantAndReturnCaptured(piece as Pawn, pieceMovement);
+
+            if (pieceMovement.IsCastling && piece is King)
+                return MoveCastling(piece as King, pieceMovement);
 
             BoardPosition from = piece.Position;
             BoardPosition to = pieceMovement.Destination;
@@ -117,7 +120,7 @@ namespace ChessNet.Data.Models
             return destinationPiece;
         }
 
-        public Piece EnPassantAndReturnCaptured(Pawn piece, PieceMovement pieceMovement)
+        public Piece MoveEnPassantAndReturnCaptured(Pawn piece, PieceMovement pieceMovement)
         {
             BoardPosition from = piece.Position;
             BoardPosition to = pieceMovement.Destination;
@@ -137,6 +140,25 @@ namespace ChessNet.Data.Models
             LastMovedPiece = piece;
 
             return capturedPiece;
+        }
+
+        public Piece MoveCastling(King king, PieceMovement pieceMovement)
+        {
+            Piece rook = pieceMovement.PieceAtDestination;
+            int rookStep = (king.Position.Column - pieceMovement.Destination.Column) > 0 ? -1 : 1;
+
+            BoardPosition rookPosition = new(king.Position.Column + rookStep, king.Position.Row);
+            BoardPosition kingPosition = pieceMovement.Destination;
+
+            _chessBoard[rook.Position.Column, rook.Position.Row] = null;
+            _chessBoard[rookPosition.Column, rookPosition.Row] = rook;
+            rook.Position = rookPosition;
+
+            _chessBoard[king.Position.Column, king.Position.Row] = null;
+            _chessBoard[kingPosition.Column, kingPosition.Row] = king;
+            king.Position = kingPosition;
+
+            return null;
         }
 
         public PieceMovement MoveTo(BoardPosition position)
@@ -165,6 +187,32 @@ namespace ChessNet.Data.Models
                 return count;
             }
         }
+
+        private List<Piece> _piecesBeingCheckedForAttack = new();
+
+        public bool IsPositionUnderAttackFor(PieceColor color, BoardPosition position)
+        {
+            var attackerColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;
+
+            var pieces = GetPieces(attackerColor).ToList();
+
+            foreach (Piece piece in pieces)
+            {
+                if (!_piecesBeingCheckedForAttack.Contains(piece))
+                {
+                    _piecesBeingCheckedForAttack.Add(piece);
+
+                    if (piece.GetMovements().Any(m => m.Destination == position))
+                        return true;
+
+                    _piecesBeingCheckedForAttack.Remove(piece);
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsPositionUnderAttackFor(Piece piece) => IsPositionUnderAttackFor(piece.Color, piece.Position);
 
         public string PrintBoard()
         {
