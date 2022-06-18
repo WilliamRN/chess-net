@@ -249,6 +249,21 @@ namespace ChessNet.Data.Models
             return sb.ToString();
         }
 
+        public Piece[,] GetBoard()
+        {
+            var board = new Piece[Columns, Rows];
+
+            for (int i = 0; i < Columns; i++)
+            {
+                for (int j = 0; j < Rows; j++)
+                {
+                    board[i, j] = _board[i, j];
+                }
+            }
+
+            return board;
+        }
+
         public object Clone()
         {
             var board = new Piece[Columns, Rows];

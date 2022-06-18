@@ -17,6 +17,9 @@ namespace ChessNet.Data.Models
 
         public Player CurrentPlayer => _turn == PieceColor.White ? _playerWhite : _playerBlack;
 
+        public int WhiteScore => _playerWhite.Points;
+        public int BlackScore => _playerBlack.Points;
+
         public ChessGame(IEnumerable<Piece> pieces, PieceColor turn = DefaultValues.STARTING_COLOR)
         {
             Board = new ChessBoard();
@@ -91,6 +94,12 @@ namespace ChessNet.Data.Models
             }
             else
                 return false;
+        }
+
+        public bool Move(BoardPosition origin, BoardPosition destiny)
+        {
+            Piece piece = Board.GetPiece(origin);
+            return MovePiece(piece, destiny);
         }
 
         private void PromotePawnToQueen(Pawn pawn)
