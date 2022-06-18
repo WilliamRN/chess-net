@@ -53,15 +53,18 @@ namespace ChessNet.ConsoleGame
 
         public bool MakeMove(string origin, string destiny)
         {
-            BoardPosition from = new(origin);
-            BoardPosition to = new(destiny);
+            BoardPosition from = new();
+            BoardPosition to = new();
             bool result;
-
-            LastFrom = from.AsString();
-            LastTo = to.AsString();
 
             try
             {
+                from = new(origin);
+                to = new(destiny);
+
+                LastFrom = from.AsString();
+                LastTo = to.AsString();
+
                 if (_game.Move(from, to))
                 {
                     Message = string.Format(MessageFormats.MOVED_PIECE, from.AsString(), to.AsString());
@@ -70,13 +73,13 @@ namespace ChessNet.ConsoleGame
                 }
                 else
                 {
-                    Message += " " + string.Format(MessageFormats.COULD_NOT_MOVE, from.AsString(), to.AsString(), "Move is not valid!");
+                    Message = string.Format(MessageFormats.COULD_NOT_MOVE, from.AsString(), to.AsString(), "Move is not valid!");
                     result = false;
                 }
             }
             catch (Exception ex)
             {
-                Message += " " + string.Format(MessageFormats.COULD_NOT_MOVE, from.AsString(), to.AsString(), ex.Message);
+                Message = string.Format(MessageFormats.COULD_NOT_MOVE, from.AsString(), to.AsString(), ex.Message);
                 result = false;
             }
 
