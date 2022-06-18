@@ -27,7 +27,7 @@ namespace ChessNet.Data.Models.Pieces
             {
                 if (TryGetValidPieceMovement(ChessBoard, Position, validOffset, Color, out PieceMovement value))
                 {
-                    if (!ChessBoard.AttackersFor(Color, value.Destination).Any())
+                    if (!ChessBoard.AttackersFor(this, value.Destination).Any())
                         yield return value;
                 }
             }
@@ -78,9 +78,11 @@ namespace ChessNet.Data.Models.Pieces
                     BoardPosition rookCastlingPosition = new(Position.Column + step, Position.Row);
                     BoardPosition kingCastlingPosition = new(Position.Column + (step * 2), Position.Row);
 
+                    List<Piece> piecesToIgnore = new(){ this, rook };
+
                     // The king does not cross over or end up on a square attacked by an opposing piece.
-                    if (!ChessBoard.AttackersFor(Color, rookCastlingPosition).Any() &&
-                        !ChessBoard.AttackersFor(Color, kingCastlingPosition).Any())
+                    if (!ChessBoard.AttackersFor(Color, rookCastlingPosition, piecesToIgnore).Any() &&
+                        !ChessBoard.AttackersFor(Color, kingCastlingPosition, piecesToIgnore).Any())
                     {
                         yield return new PieceMovement(kingCastlingPosition, rook, isCastling: true);
                     }

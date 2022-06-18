@@ -1,4 +1,4 @@
-﻿namespace ChessNet.XUnitTesting.GameStates
+﻿namespace ChessNet.XUnitTesting.GameExecution
 {
     public class Gameplay
     {

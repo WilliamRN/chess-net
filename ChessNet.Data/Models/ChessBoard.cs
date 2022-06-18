@@ -225,6 +225,12 @@ namespace ChessNet.Data.Models
             return AttackersFor(piece.Color, piece.Position, new List<Piece> { piece });
         }
 
+        public IEnumerable<Piece> AttackersFor(Piece piece, BoardPosition position)
+        {
+            // Ignore current piece when checking for attackers at new position.
+            return AttackersFor(piece.Color, position, new List<Piece> { piece });
+        }
+
         public string Print()
         {
             StringBuilder sb = new();

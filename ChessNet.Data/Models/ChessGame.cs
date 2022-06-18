@@ -9,20 +9,21 @@ namespace ChessNet.Data.Models
     public class ChessGame
     {
         public ChessBoard Board { get; private set; }
+        public GameStates GameState { get; private set; }
+
         private Player _playerWhite { get; set; }
         private Player _playerBlack { get; set; }
         private PieceColor _turn { get; set; }
-        private GameStates _gameState { get; set; }
 
         public Player CurrentPlayer => _turn == PieceColor.White ? _playerWhite : _playerBlack;
 
         public ChessGame(IEnumerable<Piece> pieces, PieceColor turn = DefaultValues.STARTING_COLOR)
         {
             Board = new ChessBoard();
+            GameState = GameStates.Setup;
             _playerWhite = new Player(PieceColor.White, () => Board.GetPieces(PieceColor.White));
             _playerBlack = new Player(PieceColor.Black, () => Board.GetPieces(PieceColor.Black));
             _turn = turn;
-            _gameState = GameStates.Setup;
 
             AddPiecesRange(pieces);
         }
@@ -38,11 +39,11 @@ namespace ChessNet.Data.Models
                 AddPiece(piece);
 
             if (Board.PieceCount > 0 && 
-                _gameState == GameStates.Setup &&
+                GameState == GameStates.Setup &&
                 _playerBlack.Pieces.Any(p => p is King) &&
                 _playerWhite.Pieces.Any(p => p is King))
             {
-                _gameState = GameStates.Start;
+                GameState = GameStates.Start;
             }
         }
 

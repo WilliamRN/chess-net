@@ -133,5 +133,26 @@ namespace ChessNet.XUnitTesting.PieceMovements
             Assert.True(!isValidMove);
             Assert.Equal(new BoardPosition("E1"), king.Position);
         }
+
+        [Fact]
+        public void When_KingIsUnderAttackInAllMoves_Then_HasNoMoves()
+        {
+            List<Piece> pieces = new()
+            {
+                new King(PieceColor.White, new BoardPosition("D4")),
+                new Knight(PieceColor.Black, new BoardPosition("G6")),
+                new Pawn(PieceColor.Black, new BoardPosition("B6")),
+                new Queen(PieceColor.Black, new BoardPosition("F3")),
+                new Rook(PieceColor.Black, new BoardPosition("D1")),
+                new Bishop(PieceColor.Black, new BoardPosition("A2")),
+            };
+
+            ChessGame game = new(pieces);
+
+            var king = game.CurrentPlayer.Pieces.First(p => p is King);
+            var validMoves = king.GetMovements().ToList();
+
+            Assert.Empty(validMoves);
+        }
     }
 }

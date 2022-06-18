@@ -48,10 +48,12 @@ namespace ChessNet.Data.Models
 
             while (checkingPosition.Column >= 0 && checkingPosition.Row >= 0)
             {
+                if (!chessBoard.IsValidPosition(checkingPosition - step))
+                    break;
+
                 checkingPosition -= step;
 
-                if (chessBoard.IsValidPosition(checkingPosition) &&
-                    chessBoard.GetPiece(checkingPosition) != null)
+                if (chessBoard.GetPiece(checkingPosition) != null)
                     break;
             }
 
