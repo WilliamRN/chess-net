@@ -1,11 +1,5 @@
 ﻿using ChessNet.ConsoleGame.Constants;
-using ChessNet.Data.Models;
-using ChessNet.Data.Structs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ChessNet.ConsoleGame
 {
@@ -122,7 +116,6 @@ namespace ChessNet.ConsoleGame
             return gameManager.MakeMove(from, to);
         }
 
-        // todo: move this!
         public void MainGameLoop()
         {
             GameManager gameManager = new(GetPlayerName(), GetPlayerName(false));
