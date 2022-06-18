@@ -117,8 +117,10 @@ namespace ChessNet.Data.Models
                     if (!IsAnyMoveAvailableForCurrentPlayer())
                         State = GameStates.CheckMate;
                 }
-
-                State = GameStates.Playing;
+                else
+                { 
+                    State = GameStates.Playing;
+                }
             }
         }
 
