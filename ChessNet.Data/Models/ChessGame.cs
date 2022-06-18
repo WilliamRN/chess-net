@@ -78,12 +78,8 @@ namespace ChessNet.Data.Models
                 if (nextMove.IsCaptureFor(CurrentPlayer.Color))
                     CurrentPlayer.Points += capturedPiece.Points;
 
-                if (piece is Pawn &&
-                    (piece.Position.Row == _chessBoard.Rows - 1 ||
-                    piece.Position.Row == 0))
-                {
+                if (piece is Pawn && (piece as Pawn).IsPromotingToQueen())
                     PromotePawnToQueen(piece as Pawn);
-                }
 
                 _turn = CurrentPlayer.Color == PieceColor.Black ? PieceColor.White : PieceColor.Black;
 

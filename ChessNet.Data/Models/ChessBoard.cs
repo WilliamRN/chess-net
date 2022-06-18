@@ -7,20 +7,20 @@ using System.Text;
 
 namespace ChessNet.Data.Models
 {
-    public class ChessBoard
+    public class ChessBoard : ICloneable
     {
         public int Columns { get; private set; }
         public int Rows { get; private set; }
 
-        private Piece[,] _chessBoard { get; set; }
+        private Piece[,] _board { get; set; }
         public PieceMovement LastMove { get; private set; }
         public object LastMovedPiece { get; private set; }
 
-        public ChessBoard()
+        public ChessBoard(int columns = DefaultValues.BOARD_SIZE, int rows = DefaultValues.BOARD_SIZE)
         {
-            Columns = DefaultValues.BOARD_SIZE;
-            Rows = DefaultValues.BOARD_SIZE;
-            _chessBoard = new Piece[Columns, Rows];
+            Columns = columns;
+            Rows = rows;
+            _board = new Piece[Columns, Rows];
         }
 
         public bool AddPiece(Piece piece)
@@ -28,7 +28,7 @@ namespace ChessNet.Data.Models
             if (IsValidPosition(piece.Position) &&
                 GetPiece(piece.Position) == null)
             {
-                _chessBoard[piece.Position.Column, piece.Position.Row] = piece;
+                _board[piece.Position.Column, piece.Position.Row] = piece;
                 piece.ChessBoard = this;
                 return true;
             }
@@ -44,7 +44,7 @@ namespace ChessNet.Data.Models
 
                 if (currentPiece != null)
                 {
-                    _chessBoard[currentPiece.Position.Column, currentPiece.Position.Row] = null;
+                    _board[currentPiece.Position.Column, currentPiece.Position.Row] = null;
                     piece.ChessBoard = currentPiece.ChessBoard = null;
                     return true;
                 }
@@ -55,14 +55,14 @@ namespace ChessNet.Data.Models
 
         public IEnumerable<Piece> GetPieces(PieceColor pieceColor)
         {
-            return _chessBoard
+            return _board
                 .Cast<Piece>()
                 .Where(p => p?.Color == pieceColor);
         }
 
         public Piece GetPiece(int column, int row)
         {
-            return _chessBoard[column, row];
+            return _board[column, row];
         }
 
         public Piece GetPiece(BoardPosition boardPosition) =>
@@ -75,8 +75,8 @@ namespace ChessNet.Data.Models
         {
             if (column < 0) return false;
             if (row < 0) return false;
-            if (column >= _chessBoard.GetLength(0)) return false;
-            if (row >= _chessBoard.GetLength(1)) return false;
+            if (column >= _board.GetLength(0)) return false;
+            if (row >= _board.GetLength(1)) return false;
 
             return true;
         }
@@ -104,11 +104,11 @@ namespace ChessNet.Data.Models
                 pieceAsPawn.IsLastMoveTwoSpaces = true;
             }
 
-            Piece destinationPiece = _chessBoard[to.Column, to.Row];
-            Piece originPiece = _chessBoard[from.Column, from.Row];
+            Piece destinationPiece = _board[to.Column, to.Row];
+            Piece originPiece = _board[from.Column, from.Row];
 
-            _chessBoard[from.Column, from.Row] = null;
-            _chessBoard[to.Column, to.Row] = originPiece;
+            _board[from.Column, from.Row] = null;
+            _board[to.Column, to.Row] = originPiece;
             piece.Position = originPiece.Position = to;
 
             if (destinationPiece != null)
@@ -126,12 +126,12 @@ namespace ChessNet.Data.Models
             BoardPosition to = pieceMovement.Destination;
             BoardPosition capturedFrom = pieceMovement.PieceAtDestination.Position;
 
-            Piece originPiece = _chessBoard[from.Column, from.Row];
-            Piece capturedPiece = _chessBoard[capturedFrom.Column, capturedFrom.Row];
+            Piece originPiece = _board[from.Column, from.Row];
+            Piece capturedPiece = _board[capturedFrom.Column, capturedFrom.Row];
 
-            _chessBoard[capturedFrom.Column, capturedFrom.Row] = null;
-            _chessBoard[from.Column, from.Row] = null;
-            _chessBoard[to.Column, to.Row] = originPiece;
+            _board[capturedFrom.Column, capturedFrom.Row] = null;
+            _board[from.Column, from.Row] = null;
+            _board[to.Column, to.Row] = originPiece;
             piece.Position = originPiece.Position = to;
 
             capturedPiece.ChessBoard = null;
@@ -150,12 +150,12 @@ namespace ChessNet.Data.Models
             BoardPosition rookPosition = new(king.Position.Column + rookStep, king.Position.Row);
             BoardPosition kingPosition = pieceMovement.Destination;
 
-            _chessBoard[rook.Position.Column, rook.Position.Row] = null;
-            _chessBoard[rookPosition.Column, rookPosition.Row] = rook;
+            _board[rook.Position.Column, rook.Position.Row] = null;
+            _board[rookPosition.Column, rookPosition.Row] = rook;
             rook.Position = rookPosition;
 
-            _chessBoard[king.Position.Column, king.Position.Row] = null;
-            _chessBoard[kingPosition.Column, kingPosition.Row] = king;
+            _board[king.Position.Column, king.Position.Row] = null;
+            _board[kingPosition.Column, kingPosition.Row] = king;
             king.Position = kingPosition;
 
             return null;
@@ -178,7 +178,7 @@ namespace ChessNet.Data.Models
             {
                 var count = 0;
 
-                foreach (Piece piece in _chessBoard)
+                foreach (Piece piece in _board)
                 {
                     if (piece != null)
                         count++;
@@ -188,24 +188,44 @@ namespace ChessNet.Data.Models
             }
         }
 
-        public IEnumerable<Piece> AttackersFor(PieceColor color, BoardPosition position)
+        public IEnumerable<Piece> AttackersFor(PieceColor color, BoardPosition position, IEnumerable<Piece> piecesToIgnore = null)
         {
             IEnumerable<Piece> result = new List<Piece>();
-            
-            // TODO: ignore self piece on checking for attackers.
+            ChessBoard boardWithoutIngoredPieces;
+
+            if (piecesToIgnore != null && piecesToIgnore.Any())
+            {
+                boardWithoutIngoredPieces = this.Clone() as ChessBoard;
+
+                foreach(Piece toIgnore in piecesToIgnore)
+                {
+                    var atPosition = GetPiece(toIgnore.Position);
+
+                    if (atPosition != null)
+                        boardWithoutIngoredPieces._board[atPosition.Position.Column, atPosition.Position.Row] = null;
+                }
+            }
+            else
+            {
+                boardWithoutIngoredPieces = this;
+            }
 
             return result
-                .Concat(King.GetKingAttackersFor(this, color, position))
-                .Concat(Pawn.GetPawnAttackersFor(this, color, position))
-                .Concat(Knight.GetKnightAttackersFor(this, color, position))
-                .Concat(Bishop.GetBishopAttackersFor(this, color, position))
-                .Concat(Rook.GetRookAttackersFor(this, color, position))
-                .Concat(Queen.GetQueenAttackersFor(this, color, position));
+                .Concat(King.GetKingAttackersFor(boardWithoutIngoredPieces, color, position))
+                .Concat(Pawn.GetPawnAttackersFor(boardWithoutIngoredPieces, color, position))
+                .Concat(Knight.GetKnightAttackersFor(boardWithoutIngoredPieces, color, position))
+                .Concat(Bishop.GetBishopAttackersFor(boardWithoutIngoredPieces, color, position))
+                .Concat(Rook.GetRookAttackersFor(boardWithoutIngoredPieces, color, position))
+                .Concat(Queen.GetQueenAttackersFor(boardWithoutIngoredPieces, color, position));
         }
 
-        public IEnumerable<Piece> AttackersFor(Piece piece) => AttackersFor(piece.Color, piece.Position);
+        public IEnumerable<Piece> AttackersFor(Piece piece)
+        {
+            // Ignore current piece when checking for attackers at new position.
+            return AttackersFor(piece.Color, piece.Position, new List<Piece> { piece });
+        }
 
-        public string PrintBoard()
+        public string Print()
         {
             StringBuilder sb = new();
 
@@ -224,13 +244,35 @@ namespace ChessNet.Data.Models
 
                 for (int c = 0; c < Columns; c++)
                 {
-                    sb.Append($"[{(_chessBoard[c, r] != null ? _chessBoard[c, r].GetSymbol() : "﹘")}]");
+                    sb.Append($"[{(_board[c, r] != null ? _board[c, r].GetSymbol() : "﹘")}]");
                 }
 
                 sb.Append("\n");
             }
 
             return sb.ToString();
+        }
+
+        public object Clone()
+        {
+            var board = new Piece[Columns, Rows];
+
+            for (int i = 0; i < Columns; i++)
+            {
+                for (int j = 0; j < Rows; j++)
+                {
+                    board[i, j] = _board[i, j];
+                }
+            }
+
+            var cloned = new ChessBoard(Columns, Rows)
+            {
+                LastMove = this.LastMove,
+                LastMovedPiece = this.LastMovedPiece,
+                _board = board,
+            };
+
+            return cloned;
         }
     }
 }

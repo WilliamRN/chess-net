@@ -27,7 +27,7 @@ namespace ChessNet.XUnitTesting
         {
             ChessGame game = new();
 
-            string board = game.Board.PrintBoard();
+            string board = game.Board.Print();
 
             Assert.True(!string.IsNullOrEmpty(board));
         }

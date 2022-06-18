@@ -107,6 +107,11 @@ namespace ChessNet.Data.Models.Pieces
             return move.IsValidPosition && move.IsCaptureFor(Color);
         }
 
+        public bool IsPromotingToQueen()
+        {
+            return Position.Row == ChessBoard.Rows - 1 || Position.Row == 0;
+        }
+
         internal static IEnumerable<Pawn> GetPawnAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
         {
             Piece attacker;
