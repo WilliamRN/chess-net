@@ -18,8 +18,8 @@ namespace ChessNet.XUnitTesting.Structs
             BoardPosition boardPosition7 = new("ú3");
             BoardPosition boardPosition8 = new("D 5");
 
-            BoardPosition setpOffset1 = new(-1, 0);
-            BoardPosition setpOffset2 = new(0, -1);
+            BoardPosition stepOffset1 = new(-1, 0);
+            BoardPosition stepOffset2 = new(0, -1);
 
             Assert.True(!boardPosition1.IsDefault);
             Assert.True(!boardPosition2.IsDefault);
@@ -30,8 +30,8 @@ namespace ChessNet.XUnitTesting.Structs
             Assert.True(!boardPosition7.IsDefault);
             Assert.True(!boardPosition8.IsDefault);
 
-            Assert.True(!setpOffset1.IsDefault);
-            Assert.True(!setpOffset2.IsDefault);
+            Assert.True(!stepOffset1.IsDefault);
+            Assert.True(!stepOffset2.IsDefault);
         }
 
         [Fact]
