@@ -5,7 +5,7 @@ using ChessNet.Data.Structs;
 
 namespace ChessNet.Data.Constants
 {
-    public static class InitialStates
+    public static class InitialBoardPlacements
     {
         public static readonly IEnumerable<Piece> DEFAULT = new List<Piece>
         {

@@ -12,6 +12,7 @@ namespace ChessNet.Data.Models
         private Player _playerWhite { get; set; }
         private Player _playerBlack { get; set; }
         private PieceColor _turn { get; set; }
+        private GameStates _gameState { get; set; }
 
         public Player CurrentPlayer => _turn == PieceColor.White ? _playerWhite : _playerBlack;
         public ChessBoard Board => _chessBoard;
@@ -22,11 +23,12 @@ namespace ChessNet.Data.Models
             _playerWhite = new Player(PieceColor.White, () => _chessBoard.GetPieces(PieceColor.White));
             _playerBlack = new Player(PieceColor.Black, () => _chessBoard.GetPieces(PieceColor.Black));
             _turn = turn;
+            _gameState = GameStates.Setup;
 
             AddPiecesRange(pieces);
         }
 
-        public ChessGame() : this(InitialStates.DEFAULT)
+        public ChessGame() : this(InitialBoardPlacements.DEFAULT)
         {
 
         }
@@ -35,6 +37,14 @@ namespace ChessNet.Data.Models
         {
             foreach (var piece in pieces)
                 AddPiece(piece);
+
+            if (_chessBoard.PieceCount > 0 && 
+                _gameState == GameStates.Setup &&
+                _playerBlack.Pieces.Any(p => p is King) &&
+                _playerWhite.Pieces.Any(p => p is King))
+            {
+                _gameState = GameStates.Start;
+            }
         }
 
         public void AddPiece(Piece piece)
@@ -49,6 +59,9 @@ namespace ChessNet.Data.Models
 
             if (piece == null)
                 throw new ArgumentNullException(nameof(piece), "piece cannot be empty");
+
+            if (boardPosition.IsDefault)
+                throw new ArgumentNullException(nameof(boardPosition), "position cannot be empty");
 
             if (!piece.IsInChessBoard)
                 throw new InvalidOperationException("piece is not on the board");
@@ -84,6 +97,16 @@ namespace ChessNet.Data.Models
         {
             _chessBoard.RemovePiece(pawn);
             _chessBoard.AddPiece(new Queen(pawn.Color, pawn.Position));
+        }
+
+        private void CheckGameState()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void GameEnd()
+        {
+            throw new NotImplementedException();
         }
     }
 }
