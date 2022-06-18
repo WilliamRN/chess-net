@@ -191,6 +191,8 @@ namespace ChessNet.Data.Models
         public IEnumerable<Piece> AttackersFor(PieceColor color, BoardPosition position)
         {
             IEnumerable<Piece> result = new List<Piece>();
+            
+            // TODO: ignore self piece on checking for attackers.
 
             return result
                 .Concat(King.GetKingAttackersFor(this, color, position))
