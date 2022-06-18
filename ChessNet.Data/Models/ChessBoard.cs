@@ -29,7 +29,7 @@ namespace ChessNet.Data.Models
                 GetPiece(piece.Position) == null)
             {
                 _board[piece.Position.Column, piece.Position.Row] = piece;
-                piece.ChessBoard = this;
+                piece.Board = this;
                 return true;
             }
 
@@ -45,7 +45,7 @@ namespace ChessNet.Data.Models
                 if (currentPiece != null)
                 {
                     _board[currentPiece.Position.Column, currentPiece.Position.Row] = null;
-                    piece.ChessBoard = currentPiece.ChessBoard = null;
+                    piece.Board = currentPiece.Board = null;
                     return true;
                 }
             }
@@ -112,7 +112,7 @@ namespace ChessNet.Data.Models
             piece.Position = originPiece.Position = to;
 
             if (destinationPiece != null)
-                destinationPiece.ChessBoard = null;
+                destinationPiece.Board = null;
 
             LastMove = pieceMovement;
             LastMovedPiece = piece;
@@ -134,7 +134,7 @@ namespace ChessNet.Data.Models
             _board[to.Column, to.Row] = originPiece;
             piece.Position = originPiece.Position = to;
 
-            capturedPiece.ChessBoard = null;
+            capturedPiece.Board = null;
 
             LastMove = pieceMovement;
             LastMovedPiece = piece;
@@ -194,16 +194,9 @@ namespace ChessNet.Data.Models
             ChessBoard previewBoard;
 
             if (piece.Position != position)
-            {
-                previewBoard = this.Clone() as ChessBoard;
-
-                previewBoard._board[piece.Position.Column, piece.Position.Row] = null;
-                previewBoard._board[position.Column, position.Row] = piece;
-            }
+                previewBoard = GetPreviewBoardFor(piece, position);
             else
-            {
                 previewBoard = this;
-            }
 
             return result
                 .Concat(King.GetKingAttackersFor(previewBoard, piece.Color, position))
@@ -216,6 +209,17 @@ namespace ChessNet.Data.Models
 
         public IEnumerable<Piece> AttackersFor(Piece piece) => 
             AttackersFor(piece, piece.Position);
+
+        public ChessBoard GetPreviewBoardFor(Piece piece, BoardPosition position)
+        {
+            ChessBoard previewBoard;
+            previewBoard = this.Clone() as ChessBoard;
+
+            previewBoard._board[piece.Position.Column, piece.Position.Row] = null;
+            previewBoard._board[position.Column, position.Row] = piece;
+
+            return previewBoard;
+        }
 
         public string Print()
         {

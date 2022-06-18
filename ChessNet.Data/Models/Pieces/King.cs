@@ -25,9 +25,9 @@ namespace ChessNet.Data.Models.Pieces
 
             foreach (var validOffset in MoveOffsets.KING)
             {
-                if (TryGetValidPieceMovement(ChessBoard, Position, validOffset, Color, out PieceMovement value))
+                if (TryGetValidPieceMovement(Board, Position, validOffset, Color, out PieceMovement value))
                 {
-                    if (!ChessBoard.AttackersFor(this, value.Destination).Any())
+                    if (!Board.AttackersFor(this, value.Destination).Any())
                         yield return value;
                 }
             }
@@ -39,7 +39,7 @@ namespace ChessNet.Data.Models.Pieces
         private IEnumerable<PieceMovement> Castling()
         {
             // The king is not in check.
-            if (ChessBoard.AttackersFor(this).Any())
+            if (Board.AttackersFor(this).Any())
                 yield break;
 
             // The king has not moved.
@@ -47,7 +47,7 @@ namespace ChessNet.Data.Models.Pieces
                 yield break;
 
             // The rooks have not previously moved, and the rooks are on the same row.
-            var rooks = ChessBoard
+            var rooks = Board
                 .GetPieces(Color)
                 .Where(p =>
                     p is Rook &&
@@ -69,7 +69,7 @@ namespace ChessNet.Data.Models.Pieces
                     if (i == Position.Column || i == rook.Position.Column)
                         continue;
 
-                    if (ChessBoard.GetPiece(new BoardPosition(i, Position.Row)) != null)
+                    if (Board.GetPiece(new BoardPosition(i, Position.Row)) != null)
                         isPathOcuppied = true;
                 }
 
@@ -79,8 +79,8 @@ namespace ChessNet.Data.Models.Pieces
                     BoardPosition kingCastlingPosition = new(Position.Column + (step * 2), Position.Row);
 
                     // The king does not cross over or end up on a square attacked by an opposing piece.
-                    if (!ChessBoard.AttackersFor(rook, rookCastlingPosition).Any() &&
-                        !ChessBoard.AttackersFor(this, kingCastlingPosition).Any())
+                    if (!Board.AttackersFor(rook, rookCastlingPosition).Any() &&
+                        !Board.AttackersFor(this, kingCastlingPosition).Any())
                     {
                         yield return new PieceMovement(kingCastlingPosition, rook, isCastling: true);
                     }
@@ -102,32 +102,6 @@ namespace ChessNet.Data.Models.Pieces
                 if (attacker != null && attacker is King && attacker.Color == attackerColor)
                     yield return attacker as King;
             }
-        }
-
-        public bool IsCheck()
-        {
-            // A king that is under attack is said to be in check, and the player in check
-            // must immediately remedy the situation. There are three possible ways to remove
-            // the king from check:
-
-            //      The king is moved to an adjacent non - threatened square.A king cannot castle
-            //      to get out of check. A king can capture an adjacent enemy piece if that piece
-            //      is not protected by another enemy piece.
-
-            //      A piece is interposed between the king and the attacking piece to break the
-            //      line of threat (not possible when the attacking piece is a knight or pawn, or
-            //      when in double check).
-
-            //      The attacking piece is captured(not possible when in double check, unless the
-            //      king captures).
-
-            // If none of the three options are available, the player's king has been checkmated,
-            // and the player loses the game.
-
-            // At amateur levels, when placing the opponent's king in check, it is common to
-            // announce "check", but this is not required by the rules of chess.
-
-            throw new NotImplementedException();
         }
     }
 }

@@ -23,8 +23,9 @@ namespace ChessNet.Data.Models.Pieces
         {
             if (!IsInChessBoard) return default;
 
-            return CheckLineOfPositionsBasedOnPathStep(ChessBoard, Position, BoardDirectionSteps.DIAGONAL_STEP_FOWARD, Color)
-                .Concat(CheckLineOfPositionsBasedOnPathStep(ChessBoard, Position, BoardDirectionSteps.DIAGONAL_STEP_BACK, Color));
+            return CheckLineOfPositionsBasedOnPathStep(Board, Position, BoardDirectionSteps.DIAGONAL_STEP_FOWARD, Color)
+                .Concat(CheckLineOfPositionsBasedOnPathStep(Board, Position, BoardDirectionSteps.DIAGONAL_STEP_BACK, Color))
+                .Where(m => IsValidMoveForCurrentKingPosition(this, m));
         }
 
         internal static IEnumerable<Bishop> GetBishopAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
@@ -34,6 +35,7 @@ namespace ChessNet.Data.Models.Pieces
 
             var piecePositions = CheckLineOfPositionsBasedOnPathStep(chessBoard, position, BoardDirectionSteps.DIAGONAL_STEP_FOWARD, color)
                 .Concat(CheckLineOfPositionsBasedOnPathStep(chessBoard, position, BoardDirectionSteps.DIAGONAL_STEP_BACK, color))
+                .Where(m => m.IsCaptureFor(color))
                 .Select(m => m.Destination);
 
             foreach (var piecePosition in piecePositions)

@@ -12,5 +12,6 @@ namespace ChessNet.Data.Enums
         Surrender,
         End,
         Error,
+        InvalidGameState,
     }
 }

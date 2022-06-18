@@ -23,10 +23,11 @@ namespace ChessNet.Data.Models.Pieces
         {
             if (!IsInChessBoard) return default;
 
-            return CheckLineOfPositionsBasedOnPathStep(ChessBoard, Position, BoardDirectionSteps.HORIZONTAL_STEP, Color)
-                .Concat(CheckLineOfPositionsBasedOnPathStep(ChessBoard, Position, BoardDirectionSteps.VERTICAL_STEP, Color))
-                .Concat(CheckLineOfPositionsBasedOnPathStep(ChessBoard, Position, BoardDirectionSteps.DIAGONAL_STEP_BACK, Color))
-                .Concat(CheckLineOfPositionsBasedOnPathStep(ChessBoard, Position, BoardDirectionSteps.DIAGONAL_STEP_FOWARD, Color));
+            return CheckLineOfPositionsBasedOnPathStep(Board, Position, BoardDirectionSteps.HORIZONTAL_STEP, Color)
+                .Concat(CheckLineOfPositionsBasedOnPathStep(Board, Position, BoardDirectionSteps.VERTICAL_STEP, Color))
+                .Concat(CheckLineOfPositionsBasedOnPathStep(Board, Position, BoardDirectionSteps.DIAGONAL_STEP_BACK, Color))
+                .Concat(CheckLineOfPositionsBasedOnPathStep(Board, Position, BoardDirectionSteps.DIAGONAL_STEP_FOWARD, Color))
+                .Where(m => IsValidMoveForCurrentKingPosition(this, m));
         }
 
         internal static IEnumerable<Queen> GetQueenAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
@@ -38,6 +39,7 @@ namespace ChessNet.Data.Models.Pieces
                 .Concat(CheckLineOfPositionsBasedOnPathStep(chessBoard, position, BoardDirectionSteps.VERTICAL_STEP, color))
                 .Concat(CheckLineOfPositionsBasedOnPathStep(chessBoard, position, BoardDirectionSteps.DIAGONAL_STEP_BACK, color))
                 .Concat(CheckLineOfPositionsBasedOnPathStep(chessBoard, position, BoardDirectionSteps.DIAGONAL_STEP_FOWARD, color))
+                .Where(m => m.IsCaptureFor(color))
                 .Select(m => m.Destination);
 
             foreach (var piecePosition in piecePositions)

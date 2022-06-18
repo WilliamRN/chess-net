@@ -35,7 +35,7 @@ namespace ChessNet.Data.Models.Pieces
 
             // Can move but not capture ahead
             position = Position.GetOffset(0, PawnStep);
-            move = ChessBoard.MoveTo(position);
+            move = Board.MoveTo(position);
 
             if (IsValidMove(move))
                 yield return move;
@@ -46,7 +46,7 @@ namespace ChessNet.Data.Models.Pieces
             if (IsFirstMove && !isPieceAhead)
             {
                 position = Position.GetOffset(0, PawnStep * 2);
-                move = ChessBoard.MoveTo(position);
+                move = Board.MoveTo(position);
 
                 if(IsValidMove(move))
                     yield return move;
@@ -54,11 +54,11 @@ namespace ChessNet.Data.Models.Pieces
 
             // Can only capture on imediate diagonals
             position = Position.GetOffset(1, PawnStep);
-            move = ChessBoard.MoveTo(position);
+            move = Board.MoveTo(position);
             if (IsValidCapture(move)) yield return move;
 
             position = Position.GetOffset(-1, PawnStep);
-            move = ChessBoard.MoveTo(position);
+            move = Board.MoveTo(position);
             if (IsValidCapture(move)) yield return move;
 
             // En passant check
@@ -69,9 +69,9 @@ namespace ChessNet.Data.Models.Pieces
         private PieceMovement EnPassant()
         {
             // Last moved piece must be a Pawn.
-            if (ChessBoard.LastMovedPiece != null && ChessBoard.LastMovedPiece is Pawn)
+            if (Board.LastMovedPiece != null && Board.LastMovedPiece is Pawn)
             {
-                Pawn lastMovedPiece = ChessBoard.LastMovedPiece as Pawn;
+                Pawn lastMovedPiece = Board.LastMovedPiece as Pawn;
 
                 // Captured Pawn must be adjacent.
                 if (lastMovedPiece.Position.Row == Position.Row &&
@@ -86,7 +86,7 @@ namespace ChessNet.Data.Models.Pieces
                             lastMovedPiece.Position.Column,
                             Position.Row + PawnStep);
 
-                        if (ChessBoard.GetPiece(capturePosition) == null)
+                        if (Board.GetPiece(capturePosition) == null)
                         {
                             return new PieceMovement(capturePosition, lastMovedPiece, isEnPassant: true);
                         }
@@ -99,17 +99,21 @@ namespace ChessNet.Data.Models.Pieces
 
         private bool IsValidMove(PieceMovement move)
         {
-            return move.IsValidPosition && move.PieceAtDestination is null;
+            return move.IsValidPosition &&
+                move.PieceAtDestination is null &&
+                IsValidMoveForCurrentKingPosition(this, move);
         }
 
         private bool IsValidCapture(PieceMovement move)
         {
-            return move.IsValidPosition && move.IsCaptureFor(Color);
+            return move.IsValidPosition && 
+                move.IsCaptureFor(Color) &&
+                IsValidMoveForCurrentKingPosition(this, move);
         }
 
         public bool IsPromotingToQueen()
         {
-            return Position.Row == ChessBoard.Rows - 1 || Position.Row == 0;
+            return Position.Row == Board.Rows - 1 || Position.Row == 0;
         }
 
         internal static IEnumerable<Pawn> GetPawnAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)

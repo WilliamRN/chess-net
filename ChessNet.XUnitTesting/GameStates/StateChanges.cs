@@ -11,7 +11,7 @@ namespace ChessNet.XUnitTesting.GameExecution
             var pieces = new List<Piece>();
             var game = new ChessGame(pieces);
 
-            Assert.Equal(GameStates.Setup, game.GameState);
+            Assert.Equal(GameStates.Setup, game.State);
         }
 
         [Fact]
@@ -19,7 +19,7 @@ namespace ChessNet.XUnitTesting.GameExecution
         {
             var game = new ChessGame();
 
-            Assert.Equal(GameStates.Start, game.GameState);
+            Assert.Equal(GameStates.Start, game.State);
         }
     }
 }

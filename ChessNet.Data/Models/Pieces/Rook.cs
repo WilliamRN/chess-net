@@ -23,8 +23,9 @@ namespace ChessNet.Data.Models.Pieces
         {
             if (!IsInChessBoard) return default;
 
-            return CheckLineOfPositionsBasedOnPathStep(ChessBoard, Position, BoardDirectionSteps.HORIZONTAL_STEP, Color)
-                .Concat(CheckLineOfPositionsBasedOnPathStep(ChessBoard, Position, BoardDirectionSteps.VERTICAL_STEP, Color));
+            return CheckLineOfPositionsBasedOnPathStep(Board, Position, BoardDirectionSteps.HORIZONTAL_STEP, Color)
+                .Concat(CheckLineOfPositionsBasedOnPathStep(Board, Position, BoardDirectionSteps.VERTICAL_STEP, Color))
+                .Where(m => IsValidMoveForCurrentKingPosition(this, m));
         }
 
         internal static IEnumerable<Rook> GetRookAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
@@ -34,6 +35,7 @@ namespace ChessNet.Data.Models.Pieces
 
             var piecePositions = CheckLineOfPositionsBasedOnPathStep(chessBoard, position, BoardDirectionSteps.HORIZONTAL_STEP, color)
                 .Concat(CheckLineOfPositionsBasedOnPathStep(chessBoard, position, BoardDirectionSteps.VERTICAL_STEP, color))
+                .Where(m => m.IsCaptureFor(color))
                 .Select(m => m.Destination);
 
             foreach (var piecePosition in piecePositions)

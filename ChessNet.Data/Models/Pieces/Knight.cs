@@ -25,8 +25,9 @@ namespace ChessNet.Data.Models.Pieces
 
             foreach (var validOffset in MoveOffsets.KNIGHT)
             {
-                if (TryGetValidPieceMovement(ChessBoard, Position, validOffset, Color, out PieceMovement value))
-                    yield return value;
+                if (TryGetValidPieceMovement(Board, Position, validOffset, Color, out PieceMovement value))
+                    if (IsValidMoveForCurrentKingPosition(this, value))
+                        yield return value;
             }
         }
 

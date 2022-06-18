@@ -1,5 +1,6 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
+using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using System.Diagnostics;
 
@@ -9,11 +10,12 @@ namespace ChessNet.Data.Models
     public abstract class Piece
     {
         private BoardPosition _position { get; set; }
+        private Func<GameStates> _stateGetter { get; set; }
 
         public PieceColor Color { get; private set; }
         public bool IsFirstMove { get; private set; }
         public int Points { get; private set; }
-        public ChessBoard ChessBoard { get; internal set; }
+        public ChessBoard Board { get; internal set; }
 
         public BoardPosition Position
         {
@@ -25,9 +27,29 @@ namespace ChessNet.Data.Models
             }
         }
 
+        internal GameStates State
+        {
+            get
+            {
+                var result = GameStates.InvalidGameState;
+
+                try
+                {
+                    if (_stateGetter != null)
+                        return _stateGetter();
+                }
+                catch
+                {
+                    result = GameStates.Error;
+                }
+
+                return result;
+            }
+        }
+
         public bool IsWhite => Color == PieceColor.White;
 
-        public bool IsInChessBoard => ChessBoard != null;
+        public bool IsInChessBoard => Board != null;
 
         public Piece(PieceColor pieceColor, BoardPosition boardPosition, int points = PiecePoints.DEFAULT)
         {
@@ -40,6 +62,8 @@ namespace ChessNet.Data.Models
         public abstract IEnumerable<PieceMovement> GetMovements();
 
         public abstract string GetSymbol();
+
+        internal void SetStateGetter(Func<GameStates> stateGetter) => _stateGetter = stateGetter;
 
         internal static IEnumerable<PieceMovement> CheckLineOfPositionsBasedOnPathStep(ChessBoard chessBoard, BoardPosition position, BoardPosition step, PieceColor color)
         {
@@ -99,6 +123,26 @@ namespace ChessNet.Data.Models
         {
             return move.IsValidPosition &&
                 (move.PieceAtDestination is null || move.IsCaptureFor(color));
+        }
+
+        internal bool IsValidMoveForCurrentKingPosition<T>(T piece, PieceMovement move) where T : Piece
+        {
+            // King should be under attack at this state.
+            if (State == GameStates.Check)
+            {
+                var king = Board
+                    .GetPieces(Color)
+                    .FirstOrDefault(p => p is King);
+
+                var previewBoard = Board.GetPreviewBoardFor(piece, move.Destination);
+
+                if (!previewBoard.AttackersFor(king).Any())
+                    return true;
+                else
+                    return false;
+            }
+
+            return true;
         }
     }
 }

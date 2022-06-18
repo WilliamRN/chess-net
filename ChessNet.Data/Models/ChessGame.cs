@@ -9,7 +9,7 @@ namespace ChessNet.Data.Models
     public class ChessGame
     {
         public ChessBoard Board { get; private set; }
-        public GameStates GameState { get; private set; }
+        public GameStates State { get; private set; }
 
         private Player _playerWhite { get; set; }
         private Player _playerBlack { get; set; }
@@ -20,7 +20,7 @@ namespace ChessNet.Data.Models
         public ChessGame(IEnumerable<Piece> pieces, PieceColor turn = DefaultValues.STARTING_COLOR)
         {
             Board = new ChessBoard();
-            GameState = GameStates.Setup;
+            State = GameStates.Setup;
             _playerWhite = new Player(PieceColor.White, () => Board.GetPieces(PieceColor.White));
             _playerBlack = new Player(PieceColor.Black, () => Board.GetPieces(PieceColor.Black));
             _turn = turn;
@@ -39,11 +39,11 @@ namespace ChessNet.Data.Models
                 AddPiece(piece);
 
             if (Board.PieceCount > 0 && 
-                GameState == GameStates.Setup &&
+                State == GameStates.Setup &&
                 _playerBlack.Pieces.Any(p => p is King) &&
                 _playerWhite.Pieces.Any(p => p is King))
             {
-                GameState = GameStates.Start;
+                State = GameStates.Start;
             }
         }
 
@@ -51,6 +51,8 @@ namespace ChessNet.Data.Models
         {
             if(!Board.AddPiece(piece))
                 throw new InvalidOperationException($"could not add the {piece.GetType().Name} at {piece.Position.AsString()}");
+
+            piece.SetStateGetter(() => State);
         }
 
         public bool MovePiece<T>(T piece, BoardPosition boardPosition) where T : Piece
@@ -83,6 +85,8 @@ namespace ChessNet.Data.Models
 
                 _turn = CurrentPlayer.Color == PieceColor.Black ? PieceColor.White : PieceColor.Black;
 
+                CheckGameState();
+
                 return true;
             }
             else
@@ -97,12 +101,62 @@ namespace ChessNet.Data.Models
 
         private void CheckGameState()
         {
-            throw new NotImplementedException();
+            var currentPlayerKing = CurrentPlayer.Pieces.FirstOrDefault(p => p is King) as King;
+
+            if (currentPlayerKing == null)
+            {
+                State = GameStates.End;
+                GameEnd();
+            }
+            else
+            {
+                if (Board.AttackersFor(currentPlayerKing).Any())
+                {
+                    State = GameStates.Check;
+
+                    if (!IsAnyMoveAvailableForCurrentPlayer())
+                        State = GameStates.CheckMate;
+                }
+
+                State = GameStates.Playing;
+            }
+        }
+
+        // A king that is under attack is said to be in check, and the player in check
+        // must immediately remedy the situation. There are three possible ways to remove
+        // the king from check:
+
+        //      The king is moved to an adjacent non - threatened square.A king cannot castle
+        //      to get out of check. A king can capture an adjacent enemy piece if that piece
+        //      is not protected by another enemy piece.
+
+        //      A piece is interposed between the king and the attacking piece to break the
+        //      line of threat (not possible when the attacking piece is a knight or pawn, or
+        //      when in double check).
+
+        //      The attacking piece is captured(not possible when in double check, unless the
+        //      king captures).
+
+        // If none of the three options are available, the player's king has been checkmated,
+        // and the player loses the game.
+
+        // At amateur levels, when placing the opponent's king in check, it is common to
+        // announce "check", but this is not required by the rules of chess.
+
+        private bool IsAnyMoveAvailableForCurrentPlayer()
+        {
+            foreach (Piece p in CurrentPlayer.Pieces)
+            {
+                if (p.GetMovements().Any())
+                    return true;
+            }
+
+            return false;
         }
 
         private void GameEnd()
         {
-            throw new NotImplementedException();
+            // TODO: ¯\_(ツ)_/¯
         }
     }
 }
