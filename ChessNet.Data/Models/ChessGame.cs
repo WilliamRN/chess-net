@@ -8,20 +8,19 @@ namespace ChessNet.Data.Models
 {
     public class ChessGame
     {
-        private ChessBoard _chessBoard { get; set; }
+        public ChessBoard Board { get; private set; }
         private Player _playerWhite { get; set; }
         private Player _playerBlack { get; set; }
         private PieceColor _turn { get; set; }
         private GameStates _gameState { get; set; }
 
         public Player CurrentPlayer => _turn == PieceColor.White ? _playerWhite : _playerBlack;
-        public ChessBoard Board => _chessBoard;
 
         public ChessGame(IEnumerable<Piece> pieces, PieceColor turn = DefaultValues.STARTING_COLOR)
         {
-            _chessBoard = new ChessBoard();
-            _playerWhite = new Player(PieceColor.White, () => _chessBoard.GetPieces(PieceColor.White));
-            _playerBlack = new Player(PieceColor.Black, () => _chessBoard.GetPieces(PieceColor.Black));
+            Board = new ChessBoard();
+            _playerWhite = new Player(PieceColor.White, () => Board.GetPieces(PieceColor.White));
+            _playerBlack = new Player(PieceColor.Black, () => Board.GetPieces(PieceColor.Black));
             _turn = turn;
             _gameState = GameStates.Setup;
 
@@ -38,7 +37,7 @@ namespace ChessNet.Data.Models
             foreach (var piece in pieces)
                 AddPiece(piece);
 
-            if (_chessBoard.PieceCount > 0 && 
+            if (Board.PieceCount > 0 && 
                 _gameState == GameStates.Setup &&
                 _playerBlack.Pieces.Any(p => p is King) &&
                 _playerWhite.Pieces.Any(p => p is King))
@@ -49,7 +48,7 @@ namespace ChessNet.Data.Models
 
         public void AddPiece(Piece piece)
         {
-            if(!_chessBoard.AddPiece(piece))
+            if(!Board.AddPiece(piece))
                 throw new InvalidOperationException($"could not add the {piece.GetType().Name} at {piece.Position.AsString()}");
         }
 
@@ -73,7 +72,7 @@ namespace ChessNet.Data.Models
 
             if (validMoves.TryMoveTo(boardPosition, out nextMove))
             {
-                var capturedPiece = _chessBoard.MovePieceAndReturnCaptured(piece, nextMove);
+                var capturedPiece = Board.MovePieceAndReturnCaptured(piece, nextMove);
 
                 if (nextMove.IsCaptureFor(CurrentPlayer.Color))
                     CurrentPlayer.Points += capturedPiece.Points;
@@ -91,8 +90,8 @@ namespace ChessNet.Data.Models
 
         private void PromotePawnToQueen(Pawn pawn)
         {
-            _chessBoard.RemovePiece(pawn);
-            _chessBoard.AddPiece(new Queen(pawn.Color, pawn.Position));
+            Board.RemovePiece(pawn);
+            Board.AddPiece(new Queen(pawn.Color, pawn.Position));
         }
 
         private void CheckGameState()
