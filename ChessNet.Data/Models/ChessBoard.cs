@@ -188,31 +188,20 @@ namespace ChessNet.Data.Models
             }
         }
 
-        private List<Piece> _piecesBeingCheckedForAttack = new();
-
-        public bool IsPositionUnderAttackFor(PieceColor color, BoardPosition position)
+        public IEnumerable<Piece> AttackersFor(PieceColor color, BoardPosition position)
         {
-            var attackerColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;
+            IEnumerable<Piece> result = new List<Piece>();
 
-            var pieces = GetPieces(attackerColor).ToList();
-
-            foreach (Piece piece in pieces)
-            {
-                if (!_piecesBeingCheckedForAttack.Contains(piece))
-                {
-                    _piecesBeingCheckedForAttack.Add(piece);
-
-                    if (piece.GetMovements().Any(m => m.Destination == position))
-                        return true;
-
-                    _piecesBeingCheckedForAttack.Remove(piece);
-                }
-            }
-
-            return false;
+            return result
+                .Concat(King.GetKingAttackersFor(this, color, position))
+                .Concat(Pawn.GetPawnAttackersFor(this, color, position))
+                .Concat(Knight.GetKnightAttackersFor(this, color, position))
+                .Concat(Bishop.GetBishopAttackersFor(this, color, position))
+                .Concat(Rook.GetRookAttackersFor(this, color, position))
+                .Concat(Queen.GetQueenAttackersFor(this, color, position));
         }
 
-        public bool IsPositionUnderAttackFor(Piece piece) => IsPositionUnderAttackFor(piece.Color, piece.Position);
+        public IEnumerable<Piece> AttackersFor(Piece piece) => AttackersFor(piece.Color, piece.Position);
 
         public string PrintBoard()
         {
@@ -222,7 +211,7 @@ namespace ChessNet.Data.Models
 
             for (int c = 0; c < Columns; c++)
             {
-                sb.Append($" {c.ToColumnAnnotation()} ");
+                sb.Append($" {c.ToColumnAnnotation()}♙");
             }
 
             sb.Append($"\n");
@@ -233,7 +222,7 @@ namespace ChessNet.Data.Models
 
                 for (int c = 0; c < Columns; c++)
                 {
-                    sb.Append($"[{(_chessBoard[c, r] != null ? (_chessBoard[c, r].Color == PieceColor.White ? "W" : "B") : " ")}]");
+                    sb.Append($"[{(_chessBoard[c, r] != null ? _chessBoard[c, r].GetSymbol() : "﹘")}]");
                 }
 
                 sb.Append("\n");

@@ -1,19 +1,28 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
 using ChessNet.Data.Structs;
+using System.Diagnostics;
 
 namespace ChessNet.Data.Models.Pieces
 {
+    [DebuggerDisplay("{Color} {this.GetType().Name} at {Position} inPlay:{IsInChessBoard}")]
     public class Pawn : Piece
     {
         public bool IsLastMoveTwoSpaces { get; internal set; }
 
-        private int PawnStep => IsWhite ? 1 : -1;
+        private int PawnStep => PawnStepByColor(Color);
+
+        internal static int PawnStepByColor(PieceColor color) => color == PieceColor.White ? 1 : -1;
 
         public Pawn(PieceColor pieceColor, BoardPosition boardPosition) 
             : base(pieceColor, boardPosition, PiecePoints.PAWN)
         {
 
+        }
+
+        public override string GetSymbol()
+        {
+            return Color == PieceColor.White ? "♙" : "♟";
         }
 
         public override IEnumerable<PieceMovement> GetMovements()
@@ -96,6 +105,27 @@ namespace ChessNet.Data.Models.Pieces
         private bool IsValidCapture(PieceMovement move)
         {
             return move.IsValidPosition && move.IsCaptureFor(Color);
+        }
+
+        internal static IEnumerable<Pawn> GetPawnAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
+        {
+            Piece attacker;
+            var attackerColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;
+            var attackerStep = PawnStepByColor(attackerColor);
+            BoardPosition piecePosition;
+
+            // Can only capture on imediate diagonals
+            piecePosition = position.GetOffset(1, -attackerStep);
+            attacker = chessBoard.IsValidPosition(piecePosition) ? chessBoard.GetPiece(piecePosition) : null;
+
+            if (attacker != null && attacker is Pawn && attacker.Color == attackerColor)
+                yield return attacker as Pawn;
+
+            piecePosition = position.GetOffset(-1, -attackerStep);
+            attacker = chessBoard.IsValidPosition(piecePosition) ? chessBoard.GetPiece(piecePosition) : null;
+
+            if (attacker != null && attacker is Pawn && attacker.Color == attackerColor)
+                yield return attacker as Pawn;
         }
     }
 }

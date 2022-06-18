@@ -1,17 +1,20 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
 using ChessNet.Data.Structs;
+using System.Diagnostics;
 
 namespace ChessNet.Data.Models
 {
+    [DebuggerDisplay("{Color} {this.GetType().Name} at {Position} inPlay:{IsInChessBoard}")]
     public abstract class Piece
     {
+        private BoardPosition _position { get; set; }
+
         public PieceColor Color { get; private set; }
         public bool IsFirstMove { get; private set; }
         public int Points { get; private set; }
-
         public ChessBoard ChessBoard { get; internal set; }
-        private BoardPosition _position { get; set; }
+
         public BoardPosition Position
         {
             get => _position;
@@ -36,33 +39,35 @@ namespace ChessNet.Data.Models
 
         public abstract IEnumerable<PieceMovement> GetMovements();
 
-        internal IEnumerable<PieceMovement> CheckLineOfPositionsBasedOnPathStep(BoardPosition step)
+        public abstract string GetSymbol();
+
+        internal static IEnumerable<PieceMovement> CheckLineOfPositionsBasedOnPathStep(ChessBoard chessBoard, BoardPosition position, BoardPosition step, PieceColor color)
         {
             // Find start of step loop, given current position.
-            BoardPosition checkingPosition = Position;
+            BoardPosition checkingPosition = position;
 
             while (checkingPosition.Column >= 0 && checkingPosition.Row >= 0)
             {
                 checkingPosition -= step;
 
-                if (ChessBoard.IsValidPosition(checkingPosition) &&
-                    ChessBoard.GetPiece(checkingPosition) != null)
+                if (chessBoard.IsValidPosition(checkingPosition) &&
+                    chessBoard.GetPiece(checkingPosition) != null)
                     break;
             }
 
             BoardPosition startingPosition = checkingPosition;
 
             // Step through each step, and avoid current piece placement, stopping when out of board.
-            while (checkingPosition.Column < ChessBoard.Columns && checkingPosition.Row < ChessBoard.Rows)
+            while (checkingPosition.Column < chessBoard.Columns && checkingPosition.Row < chessBoard.Rows)
             {
-                if (checkingPosition == Position)
+                if (checkingPosition == position)
                 {
                     checkingPosition += step;
                     continue;
                 }
 
-                var move = ChessBoard.MoveTo(checkingPosition);
-                if (IsValidMove(move)) yield return move;
+                var move = chessBoard.MoveTo(checkingPosition);
+                if (IsValidMove(move, color)) yield return move;
 
                 // Cannot move past a piece on its movement path.
                 if (move.IsValidPosition && 
@@ -73,13 +78,13 @@ namespace ChessNet.Data.Models
             }
         }
 
-        internal bool TryGetValidPieceMovement(BoardPosition offset, out PieceMovement pieceMovement)
+        internal static bool TryGetValidPieceMovement(ChessBoard chessBoad, BoardPosition position, BoardPosition offset, PieceColor color, out PieceMovement pieceMovement)
         {
-            var position = Position.GetOffset(offset);
-            var move = ChessBoard.MoveTo(position);
+            var movePosition = position.GetOffset(offset);
+            var move = chessBoad.MoveTo(movePosition);
             pieceMovement = default;
 
-            if (IsValidMove(move))
+            if (IsValidMove(move, color))
             {
                 pieceMovement = move;
                 return true;
@@ -88,10 +93,10 @@ namespace ChessNet.Data.Models
             return false;
         }
 
-        private bool IsValidMove(PieceMovement move)
+        private static bool IsValidMove(PieceMovement move, PieceColor color)
         {
             return move.IsValidPosition &&
-                (move.PieceAtDestination is null || move.IsCaptureFor(Color));
+                (move.PieceAtDestination is null || move.IsCaptureFor(color));
         }
     }
 }

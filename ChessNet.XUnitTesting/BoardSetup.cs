@@ -16,9 +16,20 @@ namespace ChessNet.XUnitTesting
                 new Pawn(PieceColor.White, new BoardPosition(0, 0)),
             };
 
-            Assert.Throws<InvalidOperationException>(() => {
+            Assert.Throws<InvalidOperationException>(() =>
+            {
                 ChessGame game = new(pieces);
             });
+        }
+
+        [Fact]
+        public void When_BoardIsInitialized_Then_PrintBoard()
+        {
+            ChessGame game = new();
+
+            string board = game.Board.PrintBoard();
+
+            Assert.True(!string.IsNullOrEmpty(board));
         }
     }
 }

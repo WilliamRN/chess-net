@@ -13,22 +13,22 @@ namespace ChessNet.XUnitTesting.PieceMovements
         {
             List<Piece> pieces = new()
             {
-                new King(PieceColor.White, new BoardPosition(0, 4)),
-                new Rook(PieceColor.White, new BoardPosition(0, 5)),
-                new Rook(PieceColor.Black, new BoardPosition(1, 4)),
+                new King(PieceColor.White, new BoardPosition("A5")),
+                new Rook(PieceColor.White, new BoardPosition("B6")),
+                new Pawn(PieceColor.Black, new BoardPosition("B5")),
             };
 
             ChessGame game = new(pieces);
 
             var king = game.Board.GetPiece(0, 4);
-            var movesAvailable = king.GetMovements();
+            var movesAvailable = king.GetMovements().ToList();
 
-            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(0, 5, out PieceMovement moveToCaptureFriend);
-            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(-1, 4, out PieceMovement moveToOutsideOfBoard);
-            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(0, 7, out PieceMovement moveToOutsideOfRange);
-            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(1, 4, out PieceMovement moveToCaptureEnemy);
-            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(0, 3, out PieceMovement moveToEmptyPath);
-            var isMoveToEmptyDiagnalValid = movesAvailable.TryMoveTo(1, 5, out PieceMovement moveToEmptyDiagnal);
+            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(new BoardPosition("B6"), out PieceMovement moveToCaptureFriend);
+            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(new BoardPosition(-1, 4), out PieceMovement moveToOutsideOfBoard);
+            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(new BoardPosition("A1"), out PieceMovement moveToOutsideOfRange);
+            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(new BoardPosition("B5"), out PieceMovement moveToCaptureEnemy);
+            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(new BoardPosition("A6"), out PieceMovement moveToEmptyPath);
+            var isMoveToEmptyDiagnalValid = movesAvailable.TryMoveTo(new BoardPosition("B4"), out PieceMovement moveToEmptyDiagnal);
 
             Assert.True(!isMoveToCaptureFriendValid && moveToCaptureFriend.IsDefault);
             Assert.True(!isMoveToOutsideOfBoardValid && moveToOutsideOfBoard.IsDefault);
@@ -112,6 +112,26 @@ namespace ChessNet.XUnitTesting.PieceMovements
             Assert.Equal(new BoardPosition("E1"), king.Position);
             Assert.Equal(new BoardPosition("A1"), rook.Position);
             Assert.True(validCastlings == 0);
+        }
+
+        [Fact]
+        public void When_KingMoveIsUnderAttack_Then_CannotMove()
+        {
+            List<Piece> pieces = new()
+            {
+                new King(PieceColor.White, new BoardPosition("E1")),
+                new Queen(PieceColor.Black, new BoardPosition("B4")),
+                new King(PieceColor.Black, new BoardPosition("E8")),
+            };
+
+            ChessGame game = new(pieces);
+
+            var king = game.CurrentPlayer.Pieces.First(p => p is King);
+
+            var isValidMove = game.MovePiece(king, new BoardPosition("D2"));
+
+            Assert.True(!isValidMove);
+            Assert.Equal(new BoardPosition("E1"), king.Position);
         }
     }
 }
