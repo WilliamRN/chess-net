@@ -53,7 +53,10 @@ namespace ChessNet.Data.Structs
 
         public string AsString()
         {
-            return $"{Column.ToColumnAnnotation()}{Row + 1}";
+            if (!IsDefault)
+                return $"{Column.ToColumnAnnotation()}{Row + 1}";
+            else
+                return "?";
         }
 
         public static bool operator ==(BoardPosition left, BoardPosition right)
