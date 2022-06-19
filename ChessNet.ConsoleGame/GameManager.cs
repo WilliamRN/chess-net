@@ -1,9 +1,10 @@
-﻿using ChessNet.AI.Interfaces;
-using ChessNet.AI.RamdomInputsAI;
+﻿using ChessNet.AI.RamdomInputsAI;
 using ChessNet.ConsoleGame.Constants;
 using ChessNet.ConsoleGame.Enums;
+using ChessNet.ConsoleGame.Players;
 using ChessNet.Data.Enums;
 using ChessNet.Data.Extensions;
+using ChessNet.Data.Interfaces;
 using ChessNet.Data.Models;
 using ChessNet.Data.Structs;
 

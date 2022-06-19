@@ -1,13 +1,10 @@
-﻿using ChessNet.AI.Interfaces;
-using ChessNet.AI.RamdomInputsAI;
-using ChessNet.ConsoleGame.Constants;
-using ChessNet.ConsoleGame.Enums;
-using ChessNet.ConsoleGame.Models;
+﻿using ChessNet.ConsoleGame.Constants;
 using ChessNet.Data.Enums;
+using ChessNet.Data.Interfaces;
 using ChessNet.Data.Structs;
 using System.Text;
 
-namespace ChessNet.ConsoleGame
+namespace ChessNet.ConsoleGame.Players
 {
     internal class HumanConsolePlayer : IPlayer
     {

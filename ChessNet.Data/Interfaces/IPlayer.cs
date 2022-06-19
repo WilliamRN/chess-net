@@ -1,7 +1,7 @@
 ﻿using ChessNet.Data.Enums;
 using ChessNet.Data.Structs;
 
-namespace ChessNet.AI.Interfaces
+namespace ChessNet.Data.Interfaces
 {
     public interface IPlayer
     {

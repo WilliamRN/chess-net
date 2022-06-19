@@ -1,5 +1,5 @@
-﻿using ChessNet.AI.Interfaces;
-using ChessNet.Data.Enums;
+﻿using ChessNet.Data.Enums;
+using ChessNet.Data.Interfaces;
 using ChessNet.Data.Models;
 using ChessNet.Data.Structs;
 using ChessNet.Utilities.Extensions;
