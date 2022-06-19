@@ -13,7 +13,7 @@ namespace ChessNet.Data.Models
         public int Rows { get; private set; }
 
         private Piece[,] _board { get; set; }
-        public PieceMovement LastMove { get; private set; }
+        public Movement LastMove { get; private set; }
         public object LastMovedPiece { get; private set; }
 
         public ChessBoard(int columns = DefaultValues.BOARD_SIZE, int rows = DefaultValues.BOARD_SIZE)
@@ -87,7 +87,7 @@ namespace ChessNet.Data.Models
         public bool IsValidPosition(Piece piece) =>
             IsValidPosition(piece.Position.Column, piece.Position.Row);
 
-        public Piece MovePieceAndReturnCaptured<T>(T piece, PieceMovement pieceMovement) where T : Piece
+        public Piece MovePieceAndReturnCaptured<T>(T piece, Movement pieceMovement) where T : Piece
         {
             if (pieceMovement.IsEnPassant && piece is Pawn)
                 return MoveEnPassantAndReturnCaptured(piece as Pawn, pieceMovement);
@@ -120,7 +120,7 @@ namespace ChessNet.Data.Models
             return destinationPiece;
         }
 
-        public Piece MoveEnPassantAndReturnCaptured(Pawn piece, PieceMovement pieceMovement)
+        public Piece MoveEnPassantAndReturnCaptured(Pawn piece, Movement pieceMovement)
         {
             BoardPosition from = piece.Position;
             BoardPosition to = pieceMovement.Destination;
@@ -142,7 +142,7 @@ namespace ChessNet.Data.Models
             return capturedPiece;
         }
 
-        public Piece MoveCastling(King king, PieceMovement pieceMovement)
+        public Piece MoveCastling(King king, Movement pieceMovement)
         {
             Piece rook = pieceMovement.PieceAtDestination;
             int rookStep = (king.Position.Column - pieceMovement.Destination.Column) > 0 ? -1 : 1;
@@ -161,12 +161,12 @@ namespace ChessNet.Data.Models
             return null;
         }
 
-        public PieceMovement MoveTo(BoardPosition position)
+        public Movement MoveTo(BoardPosition position)
         {
             if (IsValidPosition(position))
             {
                 var piece = GetPiece(position);
-                return new PieceMovement(position, piece);
+                return new Movement(position, piece);
             }
 
             return default;

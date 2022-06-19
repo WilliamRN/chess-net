@@ -19,13 +19,13 @@ namespace ChessNet.Data.Models.Pieces
             return Color == PieceColor.White ? "♘" : "♞";
         }
 
-        public override IEnumerable<PieceMovement> GetMovements()
+        public override IEnumerable<Movement> GetMovements()
         {
             if (!IsInChessBoard) yield break;
 
             foreach (var validOffset in MoveOffsets.KNIGHT)
             {
-                if (TryGetValidPieceMovement(Board, Position, validOffset, Color, out PieceMovement value))
+                if (TryGetValidPieceMovement(Board, Position, validOffset, Color, out Movement value))
                     if (IsValidMoveForCurrentKingPosition(this, value))
                         yield return value;
             }

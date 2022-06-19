@@ -4,7 +4,7 @@ using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using ChessNet.Data.Extensions;
 
-namespace ChessNet.XUnitTesting.PieceMovements
+namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
 {
     public class KnightMovement
     {
@@ -23,10 +23,10 @@ namespace ChessNet.XUnitTesting.PieceMovements
             var knight = game.Board.GetPiece(3, 4);
             var movesAvailable = knight.GetMovements();
 
-            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(4, 2, out PieceMovement moveToCaptureFriend);
-            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(7, 7, out PieceMovement moveToOutsideOfRange);
-            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(5, 3, out PieceMovement moveToCaptureEnemy);
-            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(2, 2, out PieceMovement moveToEmptyPath);
+            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(4, 2, out Movement moveToCaptureFriend);
+            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(7, 7, out Movement moveToOutsideOfRange);
+            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(5, 3, out Movement moveToCaptureEnemy);
+            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(2, 2, out Movement moveToEmptyPath);
 
             Assert.True(!isMoveToCaptureFriendValid && moveToCaptureFriend.IsDefault);
             Assert.True(!isMoveToOutsideOfRange && moveToOutsideOfRange.IsDefault);

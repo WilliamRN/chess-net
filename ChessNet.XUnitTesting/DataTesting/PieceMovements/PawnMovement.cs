@@ -4,7 +4,7 @@ using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using ChessNet.Data.Extensions;
 
-namespace ChessNet.XUnitTesting.PieceMovements
+namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
 {
     public class PawnMovement
     {
@@ -24,11 +24,11 @@ namespace ChessNet.XUnitTesting.PieceMovements
             var pawn = game.Board.GetPiece(4, 4);
             var movesAvailable = pawn.GetMovements();
 
-            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(5, 5, out PieceMovement moveToCaptureFriend);
-            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(4, 9, out PieceMovement moveToOutsideOfBoard);
-            var isMoveToOutsideOfRangeValid = movesAvailable.TryMoveTo(4, 6, out PieceMovement moveToOutsideOfRange);
-            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(3, 5, out PieceMovement moveToCaptureEnemy);
-            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(4, 5, out PieceMovement moveToEmptyPath);
+            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(5, 5, out Movement moveToCaptureFriend);
+            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(4, 9, out Movement moveToOutsideOfBoard);
+            var isMoveToOutsideOfRangeValid = movesAvailable.TryMoveTo(4, 6, out Movement moveToOutsideOfRange);
+            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(3, 5, out Movement moveToCaptureEnemy);
+            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(4, 5, out Movement moveToEmptyPath);
 
             Assert.True(!isMoveToCaptureFriendValid && moveToCaptureFriend.IsDefault);
             Assert.True(!isMoveToOutsideOfBoardValid && moveToOutsideOfBoard.IsDefault);

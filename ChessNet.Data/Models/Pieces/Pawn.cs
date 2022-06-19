@@ -25,12 +25,12 @@ namespace ChessNet.Data.Models.Pieces
             return Color == PieceColor.White ? "♙" : "♟";
         }
 
-        public override IEnumerable<PieceMovement> GetMovements()
+        public override IEnumerable<Movement> GetMovements()
         {
             if (!IsInChessBoard) yield break;
 
             BoardPosition position;
-            PieceMovement move;
+            Movement move;
             var isPieceAhead = false;
 
             // Can move but not capture ahead
@@ -66,7 +66,7 @@ namespace ChessNet.Data.Models.Pieces
             if (!move.IsDefault) yield return move;
         }
 
-        private PieceMovement EnPassant()
+        private Movement EnPassant()
         {
             // Last moved piece must be a Pawn.
             if (Board.LastMovedPiece != null && Board.LastMovedPiece is Pawn)
@@ -88,7 +88,7 @@ namespace ChessNet.Data.Models.Pieces
 
                         if (Board.GetPiece(capturePosition) == null)
                         {
-                            return new PieceMovement(capturePosition, lastMovedPiece, isEnPassant: true);
+                            return new Movement(capturePosition, lastMovedPiece, isEnPassant: true);
                         }
                     }
                 }
@@ -97,14 +97,14 @@ namespace ChessNet.Data.Models.Pieces
             return default;
         }
 
-        private bool IsValidMove(PieceMovement move)
+        private bool IsValidMove(Movement move)
         {
             return move.IsValidPosition &&
                 move.PieceAtDestination is null &&
                 IsValidMoveForCurrentKingPosition(this, move);
         }
 
-        private bool IsValidCapture(PieceMovement move)
+        private bool IsValidCapture(Movement move)
         {
             return move.IsValidPosition && 
                 move.IsCaptureFor(Color) &&

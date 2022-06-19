@@ -19,6 +19,7 @@ namespace ChessNet.Data.Models
 
         public int WhiteScore => _playerWhite.Points;
         public int BlackScore => _playerBlack.Points;
+        public bool IsFinished => State == GameStates.CheckMate || State == GameStates.End;
 
         public ChessGame(IEnumerable<Piece> pieces, PieceColor turn = DefaultValues.STARTING_COLOR)
         {
@@ -60,7 +61,7 @@ namespace ChessNet.Data.Models
 
         public bool MovePiece<T>(T piece, BoardPosition boardPosition) where T : Piece
         {
-            PieceMovement nextMove;
+            Movement nextMove;
 
             if (piece == null)
                 throw new ArgumentNullException(nameof(piece), "piece cannot be empty");

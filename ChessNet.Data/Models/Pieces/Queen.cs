@@ -19,7 +19,7 @@ namespace ChessNet.Data.Models.Pieces
             return Color == PieceColor.White ? "♕" : "♛";
         }
 
-        public override IEnumerable<PieceMovement> GetMovements()
+        public override IEnumerable<Movement> GetMovements()
         {
             if (!IsInChessBoard) return default;
 

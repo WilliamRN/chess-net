@@ -3,7 +3,7 @@ using ChessNet.Data.Models;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 
-namespace ChessNet.XUnitTesting.GameExecution
+namespace ChessNet.XUnitTesting.DataTesting.GameExecution
 {
     public class Gameplay
     {

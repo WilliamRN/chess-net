@@ -1,7 +1,7 @@
 ﻿using ChessNet.Data.Enums;
 using ChessNet.Data.Models;
 
-namespace ChessNet.XUnitTesting.GameExecution
+namespace ChessNet.XUnitTesting.DataTesting.GameExecution
 {
     public class StateChanges
     {

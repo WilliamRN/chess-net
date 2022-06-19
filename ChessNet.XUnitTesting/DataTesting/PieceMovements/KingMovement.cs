@@ -4,7 +4,7 @@ using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using ChessNet.Data.Extensions;
 
-namespace ChessNet.XUnitTesting.PieceMovements
+namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
 {
     public class KingMovement
     {
@@ -23,12 +23,12 @@ namespace ChessNet.XUnitTesting.PieceMovements
             var king = game.Board.GetPiece(0, 4);
             var movesAvailable = king.GetMovements().ToList();
 
-            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(new BoardPosition("B6"), out PieceMovement moveToCaptureFriend);
-            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(new BoardPosition(-1, 4), out PieceMovement moveToOutsideOfBoard);
-            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(new BoardPosition("A1"), out PieceMovement moveToOutsideOfRange);
-            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(new BoardPosition("B5"), out PieceMovement moveToCaptureEnemy);
-            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(new BoardPosition("A6"), out PieceMovement moveToEmptyPath);
-            var isMoveToEmptyDiagnalValid = movesAvailable.TryMoveTo(new BoardPosition("B4"), out PieceMovement moveToEmptyDiagnal);
+            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(new BoardPosition("B6"), out Movement moveToCaptureFriend);
+            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(new BoardPosition(-1, 4), out Movement moveToOutsideOfBoard);
+            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(new BoardPosition("A1"), out Movement moveToOutsideOfRange);
+            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(new BoardPosition("B5"), out Movement moveToCaptureEnemy);
+            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(new BoardPosition("A6"), out Movement moveToEmptyPath);
+            var isMoveToEmptyDiagnalValid = movesAvailable.TryMoveTo(new BoardPosition("B4"), out Movement moveToEmptyDiagnal);
 
             Assert.True(!isMoveToCaptureFriendValid && moveToCaptureFriend.IsDefault);
             Assert.True(!isMoveToOutsideOfBoardValid && moveToOutsideOfBoard.IsDefault);

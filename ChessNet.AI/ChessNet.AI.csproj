@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChessNet.AI\ChessNet.AI.csproj" />
     <ProjectReference Include="..\ChessNet.Data\ChessNet.Data.csproj" />
+    <ProjectReference Include="..\ChessNet.Utilities\ChessNet.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

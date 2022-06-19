@@ -19,13 +19,13 @@ namespace ChessNet.Data.Models.Pieces
             return Color == PieceColor.White ? "♔" : "♚";
         }
 
-        public override IEnumerable<PieceMovement> GetMovements()
+        public override IEnumerable<Movement> GetMovements()
         {
             if (!IsInChessBoard) yield break;
 
             foreach (var validOffset in MoveOffsets.KING)
             {
-                if (TryGetValidPieceMovement(Board, Position, validOffset, Color, out PieceMovement value))
+                if (TryGetValidPieceMovement(Board, Position, validOffset, Color, out Movement value))
                 {
                     if (!Board.AttackersFor(this, value.Destination).Any())
                         yield return value;
@@ -36,7 +36,7 @@ namespace ChessNet.Data.Models.Pieces
                 yield return m;
         }
 
-        private IEnumerable<PieceMovement> Castling()
+        private IEnumerable<Movement> Castling()
         {
             // The king is not in check.
             if (Board.AttackersFor(this).Any())
@@ -82,7 +82,7 @@ namespace ChessNet.Data.Models.Pieces
                     if (!Board.AttackersFor(rook, rookCastlingPosition).Any() &&
                         !Board.AttackersFor(this, kingCastlingPosition).Any())
                     {
-                        yield return new PieceMovement(kingCastlingPosition, rook, isCastling: true);
+                        yield return new Movement(kingCastlingPosition, rook, isCastling: true);
                     }
                 }
             }

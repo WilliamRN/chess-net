@@ -63,7 +63,7 @@ namespace ChessNet.Data.Extensions
             return result - 1;
         }
 
-        public static bool TryMoveTo(this IEnumerable<PieceMovement> pieceMovements, int column, int row, out PieceMovement pieceMovement)
+        public static bool TryMoveTo(this IEnumerable<Movement> pieceMovements, int column, int row, out Movement pieceMovement)
         {
             pieceMovement = default;
             bool result = false;
@@ -78,10 +78,10 @@ namespace ChessNet.Data.Extensions
             return result;
         }
 
-        public static bool TryMoveTo(this IEnumerable<PieceMovement> pieceMovements, BoardPosition boardPosition, out PieceMovement pieceMovement) =>
+        public static bool TryMoveTo(this IEnumerable<Movement> pieceMovements, BoardPosition boardPosition, out Movement pieceMovement) =>
             pieceMovements.TryMoveTo(boardPosition.Column, boardPosition.Row, out pieceMovement);
 
-        public static bool TryMoveTo(this IEnumerable<PieceMovement> pieceMovements, Piece piece, out PieceMovement pieceMovement) =>
+        public static bool TryMoveTo(this IEnumerable<Movement> pieceMovements, Piece piece, out Movement pieceMovement) =>
             pieceMovements.TryMoveTo(piece.Position.Column, piece.Position.Row, out pieceMovement);
     }
 }

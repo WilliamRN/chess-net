@@ -59,13 +59,13 @@ namespace ChessNet.Data.Models
             Points = points;
         }
 
-        public abstract IEnumerable<PieceMovement> GetMovements();
+        public abstract IEnumerable<Movement> GetMovements();
 
         public abstract string GetSymbol();
 
         internal void SetStateGetter(Func<GameStates> stateGetter) => _stateGetter = stateGetter;
 
-        internal static IEnumerable<PieceMovement> CheckLineOfPositionsBasedOnPathStep(ChessBoard chessBoard, BoardPosition position, BoardPosition step, PieceColor color)
+        internal static IEnumerable<Movement> CheckLineOfPositionsBasedOnPathStep(ChessBoard chessBoard, BoardPosition position, BoardPosition step, PieceColor color)
         {
             // Find start of step loop, given current position.
             BoardPosition checkingPosition = position;
@@ -104,7 +104,7 @@ namespace ChessNet.Data.Models
             }
         }
 
-        internal static bool TryGetValidPieceMovement(ChessBoard chessBoad, BoardPosition position, BoardPosition offset, PieceColor color, out PieceMovement pieceMovement)
+        internal static bool TryGetValidPieceMovement(ChessBoard chessBoad, BoardPosition position, BoardPosition offset, PieceColor color, out Movement pieceMovement)
         {
             var movePosition = position.GetOffset(offset);
             var move = chessBoad.MoveTo(movePosition);
@@ -119,13 +119,13 @@ namespace ChessNet.Data.Models
             return false;
         }
 
-        private static bool IsValidMove(PieceMovement move, PieceColor color)
+        private static bool IsValidMove(Movement move, PieceColor color)
         {
             return move.IsValidPosition &&
                 (move.PieceAtDestination is null || move.IsCaptureFor(color));
         }
 
-        internal bool IsValidMoveForCurrentKingPosition<T>(T piece, PieceMovement move) where T : Piece
+        internal bool IsValidMoveForCurrentKingPosition<T>(T piece, Movement move) where T : Piece
         {
             // King should be under attack at this state.
             if (State == GameStates.Check)

@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace ChessNet.Data.Structs
 {
     [DebuggerDisplay("{Destination}, isDefault: {IsDefault}, isOcuppied: {PieceAtDestination != null}")]
-    public struct PieceMovement
+    public struct Movement
     {
         private readonly bool _isPopulated;
 
@@ -14,7 +14,7 @@ namespace ChessNet.Data.Structs
         public bool IsEnPassant { get; private set; }
         public bool IsCastling { get; private set; }
 
-        public PieceMovement(BoardPosition boardPosition, Piece pieceAtDestination = null, bool isEnPassant = false, bool isCastling = false)
+        public Movement(BoardPosition boardPosition, Piece pieceAtDestination = null, bool isEnPassant = false, bool isCastling = false)
         {
             Destination = boardPosition;
             PieceAtDestination = pieceAtDestination;

@@ -1,4 +1,6 @@
-﻿using ChessNet.ConsoleGame.Constants;
+﻿using ChessNet.AI.Interfaces;
+using ChessNet.AI.RamdomInputsAI;
+using ChessNet.ConsoleGame.Constants;
 using System.Text;
 
 namespace ChessNet.ConsoleGame
@@ -107,28 +109,48 @@ namespace ChessNet.ConsoleGame
 
             to = Console.ReadLine() ?? "";
 
-            if (DefaultValues.ACTION_DELAY > 100)
-            {
-                sb.Clear();
-                sb.AppendLine($"Moving from {from} to {to}!");
-                Console.Write(sb.ToString());
-
-                Thread.Sleep(DefaultValues.ACTION_DELAY);
-            }
+            Thread.Sleep(DefaultValues.ACTION_DELAY);
 
             return gameManager.MakeMove(from, to);
         }
 
+        public bool GetNextAIMove(GameManager gameManager, IPlayerAI computer)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("");
+            sb.AppendLine($"It's {gameManager.GetPlayerName()}'s {gameManager.GetPlayerColor()} pieces turn!");
+            sb.AppendLine("Computer is thinking...");
+            Console.Write(sb.ToString());
+
+            Thread.Sleep(DefaultValues.ACTION_DELAY);
+
+            var move = computer.GetNextMove();
+            return gameManager.MakeMove(move.FromPosition, move.ToPosition);
+        }
+
         public void MainGameLoop()
         {
-            GameManager gameManager = new(GetPlayerName(), GetPlayerName(false));
+            //GameManager gameManager = new(GetPlayerName(), GetPlayerName(false));
             PrintSettingUpBoard();
+
+            GameManager gameManager = new(GetPlayerName(), "Computer");
+            RamdomAI computer = new(gameManager.ChessGame, Data.Enums.PieceColor.Black);
+            bool isPlayerTurn = true;
+            bool isValidMove = false;
 
             while (gameManager.State != "End" && gameManager.State != "CheckMate")
             {
                 ClearScreen();
                 PrintGameHeader(gameManager);
-                GetNextMove(gameManager);
+
+                if (isPlayerTurn)
+                    isValidMove = GetNextMove(gameManager);
+                else
+                    isValidMove = GetNextAIMove(gameManager, computer);
+
+                if (isValidMove)
+                    isPlayerTurn = !isPlayerTurn;
             }
 
             PrintGameEnd(gameManager);

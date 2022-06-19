@@ -4,7 +4,7 @@ using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using ChessNet.Data.Extensions;
 
-namespace ChessNet.XUnitTesting.PieceMovements
+namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
 {
     public class QueenMovement
     {
@@ -23,12 +23,12 @@ namespace ChessNet.XUnitTesting.PieceMovements
             var queen = game.Board.GetPiece(4, 4);
             var movesAvailable = queen.GetMovements();
 
-            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(6, 6, out PieceMovement moveToCaptureFriend);
-            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(-1, 4, out PieceMovement moveToOutsideOfBoard);
-            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(7, 7, out PieceMovement moveToOutsideOfRange);
-            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(1, 4, out PieceMovement moveToCaptureEnemy);
-            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(4, 1, out PieceMovement moveToEmptyPath);
-            var isMoveToEmptyDiagnalValid = movesAvailable.TryMoveTo(1, 1, out PieceMovement moveToEmptyDiagnal);
+            var isMoveToCaptureFriendValid = movesAvailable.TryMoveTo(6, 6, out Movement moveToCaptureFriend);
+            var isMoveToOutsideOfBoardValid = movesAvailable.TryMoveTo(-1, 4, out Movement moveToOutsideOfBoard);
+            var isMoveToOutsideOfRange = movesAvailable.TryMoveTo(7, 7, out Movement moveToOutsideOfRange);
+            var isMoveToCaptureEnemyValid = movesAvailable.TryMoveTo(1, 4, out Movement moveToCaptureEnemy);
+            var isMoveToEmptyPathValid = movesAvailable.TryMoveTo(4, 1, out Movement moveToEmptyPath);
+            var isMoveToEmptyDiagnalValid = movesAvailable.TryMoveTo(1, 1, out Movement moveToEmptyDiagnal);
 
             Assert.True(!isMoveToCaptureFriendValid && moveToCaptureFriend.IsDefault);
             Assert.True(!isMoveToOutsideOfBoardValid && moveToOutsideOfBoard.IsDefault);

@@ -2,7 +2,7 @@ using ChessNet.Data.Enums;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 
-namespace ChessNet.XUnitTesting.Structs
+namespace ChessNet.XUnitTesting.DataTesting.Structs
 {
     public class BoardPositions
     {
