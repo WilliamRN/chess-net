@@ -135,7 +135,7 @@ namespace ChessNet.ConsoleGame
 
         public void StartMainGameLoop()
         {
-            PieceMovement move = new();
+            PieceMovement move = default;
             _consoleDisplay.PrintSettingUpBoard();
 
             while (!ChessGame.IsFinished)
@@ -145,7 +145,7 @@ namespace ChessNet.ConsoleGame
 
                 try
                 {
-                    move = new();
+                    move = default;
 
                     if (ChessGame.CurrentPlayer.Color == PieceColor.White)
                         move = _playerWhite.GetNextMove();

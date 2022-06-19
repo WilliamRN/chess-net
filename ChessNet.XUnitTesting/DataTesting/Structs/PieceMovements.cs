@@ -21,7 +21,7 @@ namespace ChessNet.XUnitTesting.DataTesting.Structs
         [Fact]
         public void When_PieceMovementIsNotDefined_Then_IsDefault()
         {
-            Movement pieceMovement = new();
+            Movement pieceMovement = default;
 
             Assert.True(pieceMovement.IsDefault);
         }

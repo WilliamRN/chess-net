@@ -37,7 +37,7 @@ namespace ChessNet.XUnitTesting.DataTesting.Structs
         [Fact]
         public void When_BoardPositionIsNotDefined_Then_IsDefault()
         {
-            BoardPosition boardPosition = new();
+            BoardPosition boardPosition = default;
 
             Assert.True(boardPosition.IsDefault);
         }

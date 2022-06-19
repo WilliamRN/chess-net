@@ -7,15 +7,6 @@ using System.Security.Cryptography;
 
 namespace ChessNet.AI.RamdomInputsAI
 {
-    // DecisionLogic
-    //   ► Pick random move.
-    //      - List all moves and all pieces.
-    //   ► Based on board pieces and moves available.
-    //      - Need to know my color.
-
-    // Interactions
-    //   ► Move piece from position 'from' to 'to'
-
     public class RamdomAI : IPlayer
     {
         private string _name { get; set; }
@@ -37,8 +28,8 @@ namespace ChessNet.AI.RamdomInputsAI
         public PieceMovement GetNextMove()
         {
             Piece movingPiece = null;
-            PieceMovement pieceMovement = new();
-            Movement move = new();
+            PieceMovement pieceMovement = default;
+            Movement move = default;
 
             var currentPieces = _myPieces.ToList();
 
