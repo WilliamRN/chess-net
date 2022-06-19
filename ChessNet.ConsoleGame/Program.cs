@@ -1,6 +1,6 @@
 ﻿using ChessNet.ConsoleGame;
 
-ConsoleDisplay consoleDisplay = new();
+GameManager gameManager = new(new ConsoleDisplay());
 
-consoleDisplay.PrintWelcomeMessage();
-consoleDisplay.MainGameLoop();
+gameManager.Configure();
+gameManager.StartMainGameLoop();

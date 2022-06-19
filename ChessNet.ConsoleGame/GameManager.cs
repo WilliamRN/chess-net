@@ -1,4 +1,8 @@
-﻿using ChessNet.ConsoleGame.Constants;
+﻿using ChessNet.AI.Interfaces;
+using ChessNet.AI.RamdomInputsAI;
+using ChessNet.ConsoleGame.Constants;
+using ChessNet.ConsoleGame.Enums;
+using ChessNet.Data.Enums;
 using ChessNet.Data.Extensions;
 using ChessNet.Data.Models;
 using ChessNet.Data.Structs;
@@ -7,23 +11,30 @@ namespace ChessNet.ConsoleGame
 {
     internal class GameManager
     {
+        private IPlayer _playerWhite;
+        private IPlayer _playerBlack;
+
         private string _whitePlayerName;
         private string _blackPlayerName;
+        private ConsoleDisplay _consoleDisplay;
+        private int _actionDelay;
         
         public ChessGame ChessGame { get; private set; }
         public string Message { get; private set; }
-        public string State { get; private set; }
         public string LastFrom { get; private set; }
         public string LastTo { get; private set; }
         public bool IsLastMoveValid { get; private set; }
 
-        public GameManager(string whitePlayerName, string blackPlayerName)
+        public GameStates State => ChessGame.State;
+
+        public GameManager(ConsoleDisplay consoleDisplay)
         {
             ChessGame = new();
-            _whitePlayerName = whitePlayerName;
-            _blackPlayerName = blackPlayerName;
+            _whitePlayerName = DefaultValues.PLAYER_1;
+            _blackPlayerName = DefaultValues.PLAYER_2;
+            _consoleDisplay = consoleDisplay;
+            _actionDelay = DefaultValues.ACTION_DELAY;
             Message = string.Format(MessageFormats.GAME_STARTED, GetPlayerName());
-            State = ChessGame.State.ToString();
             IsLastMoveValid = false;
             LastFrom = "";
             LastTo = "";
@@ -80,33 +91,79 @@ namespace ChessNet.ConsoleGame
                 result = false;
             }
 
-            State = ChessGame.State.ToString();
             IsLastMoveValid = result;
             return result;
         }
 
-        public bool MakeMove(string origin, string destiny)
+        public void Configure()
         {
-            bool result;
-            BoardPosition from = new();
-            BoardPosition to = new();
+            GameplayMode mode = _consoleDisplay.GetGameplayMode();
 
-            try
+            switch (mode)
             {
-                from = new(origin);
-                to = new(destiny);
+                case GameplayMode.TwoPlayers:
 
-                return MakeMove(from, to);
+                    _whitePlayerName = _consoleDisplay.GetPlayerName(PieceColor.White);
+                    _playerWhite = new HumanConsolePlayer(_whitePlayerName, PieceColor.White);
+
+                    _blackPlayerName = _consoleDisplay.GetPlayerName(PieceColor.Black);
+                    _playerBlack = new HumanConsolePlayer(_blackPlayerName, PieceColor.Black);
+                    break;
+
+                case GameplayMode.AIOnly:
+
+                    _playerWhite = new RamdomAI(ChessGame, PieceColor.White, "Computer One");
+                    _whitePlayerName = _playerWhite.GetName();
+
+                    _playerBlack = new RamdomAI(ChessGame, PieceColor.Black, "Computer Two");
+                    _blackPlayerName = _playerBlack.GetName();
+
+                    _actionDelay = DefaultValues.ACTION_DELAY_AI_ONLY;
+                    break;
+
+                default:
+                case GameplayMode.OnePlayer:
+
+                    _whitePlayerName = _consoleDisplay.GetPlayerName(PieceColor.White);
+                    _playerWhite = new HumanConsolePlayer(_whitePlayerName, PieceColor.White);
+
+                    _playerBlack = new RamdomAI(ChessGame, PieceColor.Black);
+                    _blackPlayerName = _playerBlack.GetName();
+                    break;
             }
-            catch (Exception ex)
+        }
+
+        public void StartMainGameLoop()
+        {
+            PieceMovement move = new();
+            _consoleDisplay.PrintSettingUpBoard();
+
+            while (!ChessGame.IsFinished)
             {
-                Message = string.Format(MessageFormats.COULD_NOT_MOVE, from.AsString(), to.AsString(), ex.Message);
-                result = false;
+                _consoleDisplay.ClearScreen();
+                _consoleDisplay.PrintGameHeader(this);
+
+                try
+                {
+                    move = new();
+
+                    if (ChessGame.CurrentPlayer.Color == PieceColor.White)
+                        move = _playerWhite.GetNextMove();
+                    else
+                        move = _playerBlack.GetNextMove();
+
+                    MakeMove(move.FromPosition, move.ToPosition);
+
+                    Thread.Sleep(_actionDelay);
+                }
+                catch (Exception ex)
+                {
+                    Message = string.Format(MessageFormats.COULD_NOT_MOVE, move.FromPosition.AsString(), move.ToPosition.AsString(), ex.Message);
+                    IsLastMoveValid = false;
+                }
             }
 
-            State = ChessGame.State.ToString();
-            IsLastMoveValid = result;
-            return result;
+            _consoleDisplay.PrintGameEnd(this);
         }
     }
 }

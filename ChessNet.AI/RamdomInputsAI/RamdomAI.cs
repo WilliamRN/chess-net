@@ -16,17 +16,23 @@ namespace ChessNet.AI.RamdomInputsAI
     // Interactions
     //   ► Move piece from position 'from' to 'to'
 
-    public class RamdomAI : IPlayerAI
+    public class RamdomAI : IPlayer
     {
+        private string _name { get; set; }
         private ChessGame _game { get; set; }
         private PieceColor _myColor { get; set; }
         private IEnumerable<Piece> _myPieces => _game.Board.GetPieces(_myColor);
 
-        public RamdomAI(ChessGame chessGame, PieceColor aiPieceColor)
+        public RamdomAI(ChessGame chessGame, PieceColor aiPieceColor, string name = "Computer")
         {
             _game = chessGame;
+            _name = name;
             _myColor = aiPieceColor;
         }
+
+        public string GetName() => _name;
+
+        public PieceColor GetColor() => _myColor;
 
         public PieceMovement GetNextMove()
         {

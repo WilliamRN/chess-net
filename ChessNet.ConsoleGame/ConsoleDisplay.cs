@@ -1,6 +1,6 @@
-﻿using ChessNet.AI.Interfaces;
-using ChessNet.AI.RamdomInputsAI;
-using ChessNet.ConsoleGame.Constants;
+﻿using ChessNet.ConsoleGame.Constants;
+using ChessNet.ConsoleGame.Enums;
+using ChessNet.Data.Enums;
 using System.Text;
 
 namespace ChessNet.ConsoleGame
@@ -39,19 +39,18 @@ namespace ChessNet.ConsoleGame
             Console.ReadKey();
         }
 
-        public string GetPlayerName(bool isWhite = true)
+        public string GetPlayerName(PieceColor color = PieceColor.White)
         {
             StringBuilder sb = new StringBuilder();
             string PlayerName;
 
             sb.AppendLine("");
-            sb.AppendLine($"Enter the {(isWhite ? "first" : "second")} player's name ({(isWhite ? "white" : "black")} pieces):");
-
+            sb.AppendLine($"Enter the {(color == PieceColor.White ? "first" : "second")} player's name ({color.ToString()} pieces):");
             Console.Write(sb.ToString());
 
             PlayerName = Console.ReadLine() ?? "";
             PlayerName = string.IsNullOrWhiteSpace(PlayerName)
-                ? (isWhite ? DefaultValues.PLAYER_1 : DefaultValues.PLAYER_2)
+                ? (color == PieceColor.White ? DefaultValues.PLAYER_1 : DefaultValues.PLAYER_2)
                 : PlayerName;
 
             return PlayerName;
@@ -64,7 +63,6 @@ namespace ChessNet.ConsoleGame
             sb.AppendLine("");
             sb.AppendLine("Ok!");
             sb.AppendLine("Setting the board...");
-
             Console.Write(sb.ToString());
 
             Thread.Sleep(DefaultValues.ACTION_DELAY);
@@ -78,7 +76,7 @@ namespace ChessNet.ConsoleGame
             sb.AppendLine("");
             sb.AppendLine($"Last move: {gameManager.LastFrom} -> {gameManager.LastTo}, {(gameManager.IsLastMoveValid ? "Valid move!" : "Move was not valid...")}");
             sb.AppendLine($"Message: {gameManager.Message}");
-            sb.AppendLine($"Game state: {gameManager.State}");
+            sb.AppendLine($"Game state: {gameManager.State.ToString()}");
             sb.AppendLine(gameManager.GetScore());
             sb.AppendLine("Current board:");
             sb.AppendLine("");
@@ -91,69 +89,30 @@ namespace ChessNet.ConsoleGame
             Console.Write(sb.ToString());
         }
 
-        public bool GetNextMove(GameManager gameManager)
-        {
-            StringBuilder sb = new StringBuilder();
-            string from, to;
-
-            sb.AppendLine("");
-            sb.AppendLine($"It's {gameManager.GetPlayerName()}'s {gameManager.GetPlayerColor()} pieces turn!");
-            sb.AppendLine("Next move from:");
-            Console.Write(sb.ToString());
-
-            from = Console.ReadLine() ?? "";
-
-            sb.Clear();
-            sb.AppendLine($"Moving from {from} to:");
-            Console.Write(sb.ToString());
-
-            to = Console.ReadLine() ?? "";
-
-            Thread.Sleep(DefaultValues.ACTION_DELAY);
-
-            return gameManager.MakeMove(from, to);
-        }
-
-        public bool GetNextAIMove(GameManager gameManager, IPlayerAI computer)
+        public GameplayMode GetGameplayMode()
         {
             StringBuilder sb = new StringBuilder();
 
+            string defaultMode = $"{(int)GameplayMode.OnePlayer}";
+
             sb.AppendLine("");
-            sb.AppendLine($"It's {gameManager.GetPlayerName()}'s {gameManager.GetPlayerColor()} pieces turn!");
-            sb.AppendLine("Computer is thinking...");
+            sb.AppendLine($"Choose gameplay mode (default: {defaultMode}):");
+            sb.AppendLine($"  {(int)GameplayMode.TwoPlayers}. {GameplayMode.TwoPlayers.ToString()}");
+            sb.AppendLine($"  {(int)GameplayMode.OnePlayer}. {GameplayMode.OnePlayer.ToString()}");
+            sb.AppendLine($"  {(int)GameplayMode.AIOnly}. {GameplayMode.AIOnly.ToString()}");
             Console.Write(sb.ToString());
 
-            Thread.Sleep(DefaultValues.ACTION_DELAY);
+            var input = Console.ReadLine() ?? $"{defaultMode}";
 
-            var move = computer.GetNextMove();
-            return gameManager.MakeMove(move.FromPosition, move.ToPosition);
-        }
+            var selected = Enum.TryParse(input, out GameplayMode result) 
+                ? result : GameplayMode.OnePlayer;
 
-        public void MainGameLoop()
-        {
-            //GameManager gameManager = new(GetPlayerName(), GetPlayerName(false));
-            PrintSettingUpBoard();
+            if (!Enum.IsDefined(typeof(GameplayMode), selected))
+                selected = GameplayMode.OnePlayer;
 
-            GameManager gameManager = new(GetPlayerName(), "Computer");
-            RamdomAI computer = new(gameManager.ChessGame, Data.Enums.PieceColor.Black);
-            bool isPlayerTurn = true;
-            bool isValidMove = false;
+            Console.WriteLine($"mode selected: {selected.ToString()}");
 
-            while (gameManager.State != "End" && gameManager.State != "CheckMate")
-            {
-                ClearScreen();
-                PrintGameHeader(gameManager);
-
-                if (isPlayerTurn)
-                    isValidMove = GetNextMove(gameManager);
-                else
-                    isValidMove = GetNextAIMove(gameManager, computer);
-
-                if (isValidMove)
-                    isPlayerTurn = !isPlayerTurn;
-            }
-
-            PrintGameEnd(gameManager);
+            return selected;
         }
     }
 }
