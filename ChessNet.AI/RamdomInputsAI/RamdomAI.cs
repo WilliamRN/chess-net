@@ -45,7 +45,11 @@ namespace ChessNet.AI.RamdomInputsAI
 
                     var availableMoves = movingPiece.GetMovements().ToList();
 
-                    if (availableMoves.Any())
+                    if (availableMoves.Any(m => m.IsCaptureFor(_myColor)))
+                    {
+                        move = availableMoves.First(m => m.IsCaptureFor(_myColor));
+                    }
+                    else if (availableMoves.Any())
                     {
                         move = availableMoves[RandomNumberGenerator.GetInt32(0, availableMoves.Count)];
                     }
