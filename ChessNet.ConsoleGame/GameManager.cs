@@ -65,30 +65,30 @@ namespace ChessNet.ConsoleGame
 
         public void PrintBoardToConcole() => ChessGame.Board.PrintToConsole();
 
-        public bool MakeMove(BoardPosition from, BoardPosition to)
+        public bool MakeMove(PieceMovement move)
         {
             bool result;
 
             try
             {
-                LastFrom = from.AsString();
-                LastTo = to.AsString();
+                LastFrom = move.FromPosition.AsString();
+                LastTo = move.ToPosition.AsString();
 
-                if (ChessGame.Move(from, to))
+                if (ChessGame.Move(move))
                 {
-                    Message = string.Format(MessageFormats.MOVED_PIECE, from.AsString(), to.AsString());
+                    Message = string.Format(MessageFormats.MOVED_PIECE, move.FromPosition.AsString(), move.ToPosition.AsString());
                     Message += " " + string.Format(MessageFormats.NEW_TURN, GetPlayerName());
                     result = true;
                 }
                 else
                 {
-                    Message = string.Format(MessageFormats.COULD_NOT_MOVE, from.AsString(), to.AsString(), "Move is not valid!");
+                    Message = string.Format(MessageFormats.COULD_NOT_MOVE, move.FromPosition.AsString(), move.ToPosition.AsString(), "Move is not valid!");
                     result = false;
                 }
             }
             catch (Exception ex)
             {
-                Message = string.Format(MessageFormats.COULD_NOT_MOVE, from.AsString(), to.AsString(), ex.Message);
+                Message = string.Format(MessageFormats.COULD_NOT_MOVE, move.FromPosition.AsString(), move.ToPosition.AsString(), ex.Message);
                 result = false;
             }
 
@@ -153,7 +153,7 @@ namespace ChessNet.ConsoleGame
                     else
                         move = _playerBlack.GetNextMove();
 
-                    MakeMove(move.FromPosition, move.ToPosition);
+                    MakeMove(move);
 
                     Thread.Sleep(_actionDelay);
                 }

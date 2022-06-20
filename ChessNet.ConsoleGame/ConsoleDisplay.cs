@@ -93,7 +93,7 @@ namespace ChessNet.ConsoleGame
         {
             StringBuilder sb = new StringBuilder();
 
-            string defaultMode = $"{(int)GameplayMode.OnePlayer}";
+            GameplayMode defaultMode = DefaultValues.GAMEPLAY_MODE;
 
             sb.AppendLine("");
             sb.AppendLine($"Choose gameplay mode (default: {defaultMode}):");
@@ -105,12 +105,12 @@ namespace ChessNet.ConsoleGame
             var input = Console.ReadLine() ?? $"{defaultMode}";
 
             var selected = Enum.TryParse(input, out GameplayMode result) 
-                ? result : GameplayMode.OnePlayer;
+                ? result : defaultMode;
 
             if (!Enum.IsDefined(typeof(GameplayMode), selected))
-                selected = GameplayMode.OnePlayer;
+                selected = defaultMode;
 
-            Console.WriteLine($"mode selected: {selected.ToString()}");
+            Console.WriteLine($"mode selected: {selected}");
 
             return selected;
         }

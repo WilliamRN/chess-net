@@ -19,7 +19,7 @@ namespace ChessNet.Data.Models
 
         public int WhiteScore => _playerWhite.Points;
         public int BlackScore => _playerBlack.Points;
-        public bool IsFinished => State == GameStates.CheckMate || State == GameStates.End;
+        public bool IsFinished => GameEndStates.LIST.Contains(State);
 
         public ChessGame(IEnumerable<Piece> pieces, PieceColor turn = DefaultValues.STARTING_COLOR)
         {
@@ -75,6 +75,9 @@ namespace ChessNet.Data.Models
             if (piece.Color != CurrentPlayer.Color)
                 throw new InvalidOperationException($"invalid player piece, expected a {CurrentPlayer.Color} piece but got a {piece.Color} {piece.GetType().Name}");
 
+            if (IsFinished)
+                throw new InvalidOperationException($"cannot process move, game is finished on state {State} for {CurrentPlayer.Color}");
+
             var validMoves = piece.GetMovements();
 
             if (validMoves.TryMoveTo(boardPosition, out nextMove))
@@ -103,10 +106,32 @@ namespace ChessNet.Data.Models
             return MovePiece(piece, destiny);
         }
 
+        public bool Move(PieceMovement move)
+        {
+            if (move.IsDefault)
+                throw new ArgumentException("move cannot be default", nameof(move));
+
+            if (move.IsSurrender) 
+                return SetGameStateSurrender();
+
+            Piece piece = move.FromPiece != null 
+                ? move.FromPiece 
+                : Board.GetPiece(move.FromPosition);
+
+            return MovePiece(piece, move.ToPosition);
+        }
+
         private void PromotePawnToQueen(Pawn pawn)
         {
             Board.RemovePiece(pawn);
             Board.AddPiece(new Queen(pawn.Color, pawn.Position));
+        }
+
+        private bool SetGameStateSurrender()
+        {
+            State = GameStates.Surrender;
+            GameEnd();
+            return true;
         }
 
         private void CheckGameState()
@@ -120,16 +145,18 @@ namespace ChessNet.Data.Models
             }
             else
             {
+                State = GameStates.Playing;
+
+                // Game state must be set to 'Check' to look for availables moves under check condition.
                 if (Board.AttackersFor(currentPlayerKing).Any())
                 {
                     State = GameStates.Check;
-
-                    if (!IsAnyMoveAvailableForCurrentPlayer())
-                        State = GameStates.CheckMate;
                 }
-                else
-                { 
-                    State = GameStates.Playing;
+
+                if (!IsAnyMoveAvailableForCurrentPlayer())
+                {
+                    State = GameStates.CheckMate;
+                    GameEnd();
                 }
             }
         }

@@ -67,6 +67,9 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
         {
             List<Piece> pieces = new()
             {
+                new King(PieceColor.White, new BoardPosition(4, 0)),
+                new King(PieceColor.Black, new BoardPosition(4, 7)),
+
                 new Pawn(PieceColor.White, new BoardPosition("E4")),
                 new Pawn(PieceColor.Black, new BoardPosition("F7")),
             };
@@ -100,29 +103,32 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
         {
             List<Piece> pieces = new()
             {
-                new Pawn(PieceColor.White, new BoardPosition("E7")),
-                new Pawn(PieceColor.Black, new BoardPosition("B7")),
+                new King(PieceColor.White, new BoardPosition("E1")),
+                new King(PieceColor.Black, new BoardPosition("G2")),
+
+                new Pawn(PieceColor.White, new BoardPosition("B7")),
+                new Pawn(PieceColor.Black, new BoardPosition("A7")),
             };
 
             ChessGame game = new(pieces);
             var startCount = game.Board.PieceCount;
 
-            var whitePieceAtStart = game.CurrentPlayer.Pieces.First();
-            game.MovePiece(whitePieceAtStart, new BoardPosition("E8"));
+            var whitePieceAtStart = game.CurrentPlayer.Pieces.First(p => p is Pawn);
+            game.MovePiece(whitePieceAtStart, new BoardPosition("B8"));
 
             var blackPawn = game.CurrentPlayer.Pieces.First(p => p is Pawn);
-            game.MovePiece(blackPawn, new BoardPosition("B6"));
+            game.MovePiece(blackPawn, blackPawn.GetMovements().First().Destination);
 
-            var whitePieceAtEnd = game.CurrentPlayer.Pieces.First();
+            var whitePieceAtEnd = game.CurrentPlayer.Pieces.First(p => p is Queen);
 
             var queenMoves = whitePieceAtEnd.GetMovements().ToList();
             var endCount = game.Board.PieceCount;
 
-            Assert.True(startCount == 2);
+            Assert.True(startCount == 4);
             Assert.True(whitePieceAtStart is Pawn);
             Assert.True(queenMoves.Count() > 7);
             Assert.True(whitePieceAtEnd is Queen);
-            Assert.True(endCount == 2);
+            Assert.True(endCount == 4);
         }
     }
 }

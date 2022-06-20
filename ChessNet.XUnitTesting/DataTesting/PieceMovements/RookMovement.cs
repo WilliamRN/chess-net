@@ -67,6 +67,8 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
             // ARRANGE: Create board, with rook on offset column from pawn.
             List<Piece> pieces = new()
             {
+                new King(PieceColor.White, new BoardPosition(4, 0)),
+                new King(PieceColor.Black, new BoardPosition(4, 7)),
                 new Rook(PieceColor.White, new BoardPosition(2, 0)),
                 new Pawn(PieceColor.Black, new BoardPosition(0, 6)),
             };

@@ -16,6 +16,19 @@ namespace ChessNet.Data.Structs
         private readonly bool _isPopulated;
         public bool IsDefault => !_isPopulated;
 
+        public bool IsSurrender { get; private set; }
+
+        public static PieceMovement Forfeit
+        {
+            get 
+            {
+                return new PieceMovement(new BoardPosition(), new BoardPosition())
+                {
+                    IsSurrender = true,
+                };
+            }
+        }
+
         public PieceMovement(BoardPosition fromPosition, BoardPosition toPosition)
         {
             FromPiece = null;
@@ -23,6 +36,7 @@ namespace ChessNet.Data.Structs
             ToPiece = null;
             ToPosition = toPosition;
             _isPopulated = true;
+            IsSurrender = false;
         }
 
         public PieceMovement(Piece fromPiece, Piece toPiece)
@@ -32,6 +46,7 @@ namespace ChessNet.Data.Structs
             ToPiece = toPiece;
             ToPosition = toPiece.Position;
             _isPopulated = true;
+            IsSurrender = false;
         }
 
         public PieceMovement(Piece fromPiece, BoardPosition toPosition, Piece toPiece = null)
@@ -41,6 +56,7 @@ namespace ChessNet.Data.Structs
             ToPiece = toPiece;
             ToPosition = toPosition;
             _isPopulated = true;
+            IsSurrender = false;
         }
 
         public PieceMovement(Piece fromPiece, BoardPosition fromPosition, BoardPosition toPosition, Piece toPiece = null)
@@ -50,6 +66,7 @@ namespace ChessNet.Data.Structs
             ToPiece = toPiece;
             ToPosition = toPosition;
             _isPopulated = true;
+            IsSurrender = false;
         }
     }
 }

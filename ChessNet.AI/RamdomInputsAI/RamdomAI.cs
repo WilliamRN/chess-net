@@ -1,6 +1,7 @@
 ﻿using ChessNet.Data.Enums;
 using ChessNet.Data.Interfaces;
 using ChessNet.Data.Models;
+using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using ChessNet.Utilities.Extensions;
 using System.Security.Cryptography;
@@ -32,6 +33,9 @@ namespace ChessNet.AI.RamdomInputsAI
             Movement move = default;
 
             var currentPieces = _myPieces.ToList();
+
+            if (currentPieces.Count == 1 && currentPieces.First() is King)
+                return PieceMovement.Forfeit;
 
             if (!currentPieces.IsEmpty() && !_game.IsFinished)
             {
