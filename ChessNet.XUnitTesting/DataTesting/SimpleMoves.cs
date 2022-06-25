@@ -14,10 +14,10 @@ namespace ChessNet.XUnitTesting.DataTesting
 
             var pawn = game.CurrentPlayer.Pieces.First(p => p is Pawn);
             var validMoves = pawn.GetMovements().ToList();
-            var isValidMove = game.MovePiece(pawn, validMoves.First().Destination);
+            var moveResult = game.MovePiece(pawn, validMoves.First().Destination);
 
             Assert.True(validMoves.Count() > 1);
-            Assert.True(isValidMove);
+            Assert.True(moveResult.IsValid);
         }
 
         [Fact]
@@ -37,12 +37,12 @@ namespace ChessNet.XUnitTesting.DataTesting
             var previousPosition = pawn.Position;
             var validMoves = pawn.GetMovements().ToList();
             var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
-            var isValidMove = game.MovePiece(pawn, captureMove.Destination);
+            var moveResult = game.MovePiece(pawn, captureMove.Destination);
 
             Assert.True(game.Board.PieceCount < previousCount);
             Assert.True(captureMove.IsCaptureFor(startingPlayerColor) && previousPosition != pawn.Position);
             Assert.True(validMoves.Count() > 1);
-            Assert.True(isValidMove);
+            Assert.True(moveResult.IsValid);
         }
     }
 }

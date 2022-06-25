@@ -59,9 +59,11 @@ namespace ChessNet.Data.Models
             piece.SetStateGetter(() => State);
         }
 
-        public bool MovePiece<T>(T piece, BoardPosition boardPosition) where T : Piece
+        public MoveResult MovePiece<T>(T piece, BoardPosition boardPosition) where T : Piece
         {
             Movement nextMove;
+
+            MoveResult result = new(CurrentPlayer.Color, State, piece.Position, boardPosition, false);
 
             if (piece == null)
                 throw new ArgumentNullException(nameof(piece), "piece cannot be empty");
@@ -85,7 +87,10 @@ namespace ChessNet.Data.Models
                 var capturedPiece = Board.MovePieceAndReturnCaptured(piece, nextMove);
 
                 if (nextMove.IsCaptureFor(CurrentPlayer.Color))
+                {
                     CurrentPlayer.Points += capturedPiece.Points;
+                    result.CapturedPiece = capturedPiece;
+                }
 
                 if (piece is Pawn && (piece as Pawn).IsPromotingToQueen())
                     PromotePawnToQueen(piece as Pawn);
@@ -94,25 +99,25 @@ namespace ChessNet.Data.Models
 
                 CheckGameState();
 
-                return true;
+                result.IsValid = true;
             }
-            else
-                return false;
+            
+            return result;
         }
 
-        public bool Move(BoardPosition origin, BoardPosition destiny)
+        public MoveResult Move(BoardPosition origin, BoardPosition destiny)
         {
             Piece piece = Board.GetPiece(origin);
             return MovePiece(piece, destiny);
         }
 
-        public bool Move(PieceMovement move)
+        public MoveResult Move(PieceMovement move)
         {
             if (move.IsDefault)
                 throw new ArgumentException("move cannot be default", nameof(move));
 
             if (move.IsSurrender) 
-                return SetGameStateSurrender();
+                return SetGameStateSurrender(move);
 
             Piece piece = move.FromPiece != null 
                 ? move.FromPiece 
@@ -127,11 +132,12 @@ namespace ChessNet.Data.Models
             Board.AddPiece(new Queen(pawn.Color, pawn.Position));
         }
 
-        private bool SetGameStateSurrender()
+        private MoveResult SetGameStateSurrender(PieceMovement move)
         {
             State = GameStates.Surrender;
             GameEnd();
-            return true;
+
+            return new MoveResult(CurrentPlayer.Color, State, move.FromPosition, move.ToPosition, true);
         }
 
         private void CheckGameState()

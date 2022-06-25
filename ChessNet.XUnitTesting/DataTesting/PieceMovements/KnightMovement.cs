@@ -51,12 +51,12 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
             var previousPosition = knight.Position;
             var validMoves = knight.GetMovements().ToList();
             var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
-            var isValidMove = game.MovePiece(knight, captureMove.Destination);
+            var moveResult = game.MovePiece(knight, captureMove.Destination);
 
             Assert.True(game.Board.PieceCount < previousCount);
             Assert.True(captureMove.IsCaptureFor(startingPlayerColor) && previousPosition != knight.Position);
             Assert.True(validMoves.Count() > 1);
-            Assert.True(isValidMove);
+            Assert.True(moveResult.IsValid);
         }
     }
 }

@@ -53,12 +53,12 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
             var previousPosition = rook.Position;
             var validMoves = rook.GetMovements().ToList();
             var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
-            var isValidMove = game.MovePiece(rook, captureMove.Destination);
+            var moveResult = game.MovePiece(rook, captureMove.Destination);
 
             Assert.True(game.Board.PieceCount < previousCount);
             Assert.True(captureMove.IsCaptureFor(startingPlayerColor) && previousPosition != rook.Position);
             Assert.True(validMoves.Count() > 1);
-            Assert.True(isValidMove);
+            Assert.True(moveResult.IsValid);
         }
 
         [Fact]
@@ -101,13 +101,13 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
                 .Where(m => m.IsCaptureFor(PieceColor.White))
                 .FirstOrDefault();
 
-            var isValidMove = game.MovePiece(rook, captureMove.Destination);
+            var moveResult = game.MovePiece(rook, captureMove.Destination);
 
             // ASSERT
             Assert.True(!isSetToCaptureBeforeMove);
             Assert.True(game.Board.PieceCount < previousCount);
             Assert.True(!blackPawn.IsWhite);
-            Assert.True(isValidMove);
+            Assert.True(moveResult.IsValid);
         }
     }
 }

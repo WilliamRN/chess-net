@@ -19,7 +19,7 @@ namespace ChessNet.ConsoleGame
         private string _blackPlayerName;
         private ConsoleDisplay _consoleDisplay;
         private int _actionDelay;
-        
+
         public ChessGame ChessGame { get; private set; }
         public string Message { get; private set; }
         public string LastFrom { get; private set; }
@@ -43,15 +43,11 @@ namespace ChessNet.ConsoleGame
 
         public string GetPlayerName()
         {
-            return ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.White
+            return ChessGame.CurrentPlayer.Color == PieceColor.White
                 ? _whitePlayerName : _blackPlayerName;
         }
 
-        public string GetPlayerColor()
-        {
-            return ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.White
-                ? "white" : "black";
-        }
+        public string GetPlayerColor() => ChessGame.CurrentPlayer.Color.ToString();
 
         public string GetScore()
         {
@@ -74,11 +70,25 @@ namespace ChessNet.ConsoleGame
                 LastFrom = move.FromPosition.AsString();
                 LastTo = move.ToPosition.AsString();
 
-                if (ChessGame.Move(move))
+                var moveResult = ChessGame.Move(move);
+
+                if (moveResult.IsValid)
                 {
-                    Message = string.Format(MessageFormats.MOVED_PIECE, move.FromPosition.AsString(), move.ToPosition.AsString());
-                    Message += " " + string.Format(MessageFormats.NEW_TURN, GetPlayerName());
-                    result = true;
+                    if (moveResult.IsSurrender)
+                    {
+                        Message = string.Format(MessageFormats.SURRENDERED, moveResult.Player);
+                        result = true;
+                    }
+                    else
+                    {
+                        var captureMessage = moveResult.IsCapture
+                            ? string.Format(MessageFormats.MOVED_PIECE_THEN_CAPTURE, moveResult.Player, moveResult.CapturedPiece.AsString())
+                            : "";
+
+                        Message = string.Format(MessageFormats.MOVED_PIECE, move.FromPosition.AsString(), move.ToPosition.AsString(), captureMessage);
+                        Message += " " + string.Format(MessageFormats.NEW_TURN, GetPlayerName());
+                        result = true;
+                    }
                 }
                 else
                 {

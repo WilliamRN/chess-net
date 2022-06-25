@@ -55,12 +55,12 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
             var previousPosition = king.Position;
             var validMoves = king.GetMovements().ToList();
             var captureMove = validMoves.Where(m => m.IsCaptureFor(startingPlayerColor)).FirstOrDefault();
-            var isValidMove = game.MovePiece(king, captureMove.Destination);
+            var moveResult = game.MovePiece(king, captureMove.Destination);
 
             Assert.True(game.Board.PieceCount < previousCount);
             Assert.True(captureMove.IsCaptureFor(startingPlayerColor) && previousPosition != king.Position);
             Assert.True(validMoves.Count() > 1);
-            Assert.True(isValidMove);
+            Assert.True(moveResult.IsValid);
         }
 
         [Fact]
@@ -81,12 +81,12 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
 
             var validMoves = king.GetMovements().ToList();
             var validCastlings = validMoves.Where(m => m.IsCastling).Count();
-            var isValidMove = game.MovePiece(king, validMoves.First(m => m.IsCastling).Destination);
+            var moveResult = game.MovePiece(king, validMoves.First(m => m.IsCastling).Destination);
 
             Assert.Equal(new BoardPosition("C1"), king.Position);
             Assert.Equal(new BoardPosition("D1"), rook.Position);
             Assert.True(validCastlings == 1);
-            Assert.True(isValidMove);
+            Assert.True(moveResult.IsValid);
         }
 
         [Fact]
@@ -128,9 +128,9 @@ namespace ChessNet.XUnitTesting.DataTesting.PieceMovements
 
             var king = game.CurrentPlayer.Pieces.First(p => p is King);
 
-            var isValidMove = game.MovePiece(king, new BoardPosition("D2"));
+            var moveResult = game.MovePiece(king, new BoardPosition("D2"));
 
-            Assert.True(!isValidMove);
+            Assert.True(!moveResult.IsValid);
             Assert.Equal(new BoardPosition("E1"), king.Position);
         }
 

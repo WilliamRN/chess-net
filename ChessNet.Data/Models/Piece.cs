@@ -16,6 +16,8 @@ namespace ChessNet.Data.Models
         public bool IsFirstMove { get; private set; }
         public int Points { get; private set; }
         public ChessBoard Board { get; internal set; }
+        
+        public string AsString() => GetType().Name;
 
         public BoardPosition Position
         {
