@@ -14,6 +14,9 @@ namespace ChessNet.Data.Structs
         public bool IsEnPassant { get; private set; }
         public bool IsCastling { get; private set; }
 
+        public bool IsDefault => !_isPopulated;
+        public bool IsValidPosition => _isPopulated;
+
         public Movement(BoardPosition boardPosition, Piece pieceAtDestination = null, bool isEnPassant = false, bool isCastling = false)
         {
             Destination = boardPosition;
@@ -23,12 +26,7 @@ namespace ChessNet.Data.Structs
             _isPopulated = true;
         }
 
-        public bool IsCaptureFor(PieceColor color)
-        {
-            return PieceAtDestination != null && PieceAtDestination.Color != color;
-        }
-
-        public bool IsDefault => !_isPopulated;
-        public bool IsValidPosition => _isPopulated;
+        public bool IsCaptureFor(PieceColor color) =>
+            PieceAtDestination != null && PieceAtDestination.Color != color;
     }
 }

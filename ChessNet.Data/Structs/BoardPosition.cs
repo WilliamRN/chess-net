@@ -7,10 +7,12 @@ namespace ChessNet.Data.Structs
     [DebuggerDisplay("Position: {this.AsString()}")]
     public struct BoardPosition
     {
+        private readonly bool _isPopulated;
+
         public int Column;
         public int Row;
 
-        private readonly bool _isPopulated;
+        public bool IsDefault => !_isPopulated;
 
         public BoardPosition(int column, int row)
         {
@@ -41,43 +43,26 @@ namespace ChessNet.Data.Structs
             _isPopulated = true;
         }
 
-        public bool IsDefault => !_isPopulated;
-
-        public BoardPosition GetOffset(int offsetColumBy, int offsetRowBy)
-        {
-            return new BoardPosition(Column + offsetColumBy, Row + offsetRowBy);
-        }
+        public BoardPosition GetOffset(int offsetColumBy, int offsetRowBy) =>
+            new(Column + offsetColumBy, Row + offsetRowBy);
 
         public BoardPosition GetOffset(BoardPosition offset) =>
             GetOffset(offset.Column, offset.Row);
 
-        public string AsString()
-        {
-            if (!IsDefault)
-                return $"{Column.ToColumnAnnotation()}{Row + 1}";
-            else
-                return "?";
-        }
+        public string AsString() =>
+            !IsDefault ? $"{Column.ToColumnAnnotation()}{Row + 1}" : "?";
 
-        public static bool operator ==(BoardPosition left, BoardPosition right)
-        {
-            return left.Column == right.Column && left.Row == right.Row;
-        }
+        public static bool operator ==(BoardPosition left, BoardPosition right) => 
+            left.Column == right.Column && left.Row == right.Row;
 
-        public static bool operator !=(BoardPosition left, BoardPosition right)
-        {
-            return left.Column != right.Column || left.Row != right.Row;
-        }
+        public static bool operator !=(BoardPosition left, BoardPosition right) => 
+            left.Column != right.Column || left.Row != right.Row;
 
-        public static BoardPosition operator +(BoardPosition left, BoardPosition right)
-        {
-            return new BoardPosition(left.Column + right.Column, left.Row + right.Row);
-        }
+        public static BoardPosition operator +(BoardPosition left, BoardPosition right) =>
+            new(left.Column + right.Column, left.Row + right.Row);
 
-        public static BoardPosition operator -(BoardPosition left, BoardPosition right)
-        {
-            return new BoardPosition(left.Column - right.Column, left.Row - right.Row);
-        }
+        public static BoardPosition operator -(BoardPosition left, BoardPosition right) => 
+            new(left.Column - right.Column, left.Row - right.Row);
 
         public override bool Equals(object obj)
         {
@@ -87,9 +72,7 @@ namespace ChessNet.Data.Structs
             else return objAsPosition.Value == this;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Column, Row);
-        }
+        public override int GetHashCode() =>
+            HashCode.Combine(Column, Row);
     }
 }
