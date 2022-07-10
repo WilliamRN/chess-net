@@ -53,6 +53,13 @@ namespace ChessNet.Data.Models
             return false;
         }
 
+        public IEnumerable<Piece> GetPieces()
+        {
+            return _board
+                .Cast<Piece>()
+                .Where(p => p != null);
+        }
+
         public IEnumerable<Piece> GetPieces(PieceColor pieceColor)
         {
             return _board

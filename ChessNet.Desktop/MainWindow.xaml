@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChessNet.Desktop"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="MainWindow" Height="900" Width="900" KeyUp="Window_KeyUp">
+    <Grid Name="MainWindowGrid" Loaded="MainWindowGrid_Loaded">
     </Grid>
 </Window>

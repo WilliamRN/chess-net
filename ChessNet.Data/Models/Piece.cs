@@ -65,6 +65,18 @@ namespace ChessNet.Data.Models
 
         public abstract string GetSymbol();
 
+        public PieceType GetTypeEnum()
+        {
+            if (this is King) return PieceType.King;
+            else if (this is Queen) return PieceType.Queen;
+            else if (this is Pawn) return PieceType.Pawn;
+            else if (this is Rook) return PieceType.Rook;
+            else if (this is Bishop) return PieceType.Bishop;
+            else if (this is Knight) return PieceType.Knight;
+
+            throw new InvalidCastException("Cannot convert piece to enum");
+        }
+
         internal void SetStateGetter(Func<GameStates> stateGetter) => _stateGetter = stateGetter;
 
         internal static IEnumerable<Movement> CheckLineOfPositionsBasedOnPathStep(ChessBoard chessBoard, BoardPosition position, BoardPosition step, PieceColor color)

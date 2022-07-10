@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ChessNet.Data.Enums;
+using ChessNet.Data.Models;
+using ChessNet.Desktop.ChessGameControls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +23,32 @@ namespace ChessNet.Desktop
     /// </summary>
     public partial class MainWindow : Window
     {
+        private BoardTable _boardTable { get; set; }
+        private ChessGame _game { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+            ResetBoard();
+        }
+
+        private void ResetBoard()
+        {
+            _game = new();
+            _boardTable = new(_game.Board.Rows, _game.Board.Columns, _game.Board.GetPieces());
+        }
+
+        private void MainWindowGrid_Loaded(object sender, RoutedEventArgs e)
+        {
+            MainWindowGrid.Children.Add(_boardTable);
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.R)
+            {
+                ResetBoard();
+            }
         }
     }
 }
