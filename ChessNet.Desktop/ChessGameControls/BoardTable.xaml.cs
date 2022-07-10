@@ -25,24 +25,30 @@ namespace ChessNet.Desktop.ChessGameControls
         private int _rows { get; set; }
         private int _columns { get; set; }
         private BoardCell[,] _board { get; set; }
+        
+        public ChessGame ChessGame { get; set; }
 
-        public BoardTable(int rows, int columns, IEnumerable<Piece> pieces = null)
+        public BoardTable()
         {
             InitializeComponent();
-            _rows = rows;
-            _columns = columns;
-            _board = new BoardCell[_rows, _columns];
 
-            bool isListEmpty = pieces.IsEmpty();
+            ChessGame = new();
+
+            _rows = ChessGame.Board.Rows;
+            _columns = ChessGame.Board.Columns;
+            _board = new BoardCell[ChessGame.Board.Rows, ChessGame.Board.Columns];
+
+            var pieces = ChessGame.Board.GetPieces();
+            var isEmptyList = pieces.IsEmpty();
             Piece piece;
 
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < ChessGame.Board.Rows; r++)
             {
-                for (int c = 0; c < columns; c++)
+                for (int c = 0; c < ChessGame.Board.Columns; c++)
                 {
-                    _board[r, c] = new();
+                    _board[r, c] = new(r, c, ChessGame);
 
-                    if (!isListEmpty)
+                    if (!isEmptyList)
                     {
                         piece = pieces.FirstOrDefault(p => p.Position.Column == c && p.Position.Row == r);
 
@@ -53,11 +59,6 @@ namespace ChessNet.Desktop.ChessGameControls
             }
 
             InitializeBoard();
-        }
-
-        public BoardTable(int size, IEnumerable<Piece> pieces = null) : this(size, size, pieces)
-        {
-
         }
 
         private void InitializeBoard()

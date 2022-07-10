@@ -24,7 +24,6 @@ namespace ChessNet.Desktop
     public partial class MainWindow : Window
     {
         private BoardTable _boardTable { get; set; }
-        private ChessGame _game { get; set; }
 
         public MainWindow()
         {
@@ -34,8 +33,7 @@ namespace ChessNet.Desktop
 
         private void ResetBoard()
         {
-            _game = new();
-            _boardTable = new(_game.Board.Rows, _game.Board.Columns, _game.Board.GetPieces());
+            _boardTable = new();
         }
 
         private void MainWindowGrid_Loaded(object sender, RoutedEventArgs e)

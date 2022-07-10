@@ -1,5 +1,6 @@
 ﻿using ChessNet.Data.Enums;
 using ChessNet.Data.Models;
+using ChessNet.Data.Structs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,12 +24,21 @@ namespace ChessNet.Desktop.ChessGameControls
     /// </summary>
     public partial class BoardCell : UserControl
     {
+        private readonly ChessGame _chessGame;
         private MemoryStream _imageStream { get; set; }
         private BitmapImage _bitmapIimage { get; set; }
+        private int _row { get; set; }
+        private int _column { get; set; }
+        
+        public Piece Piece { get; set; }
 
-        public BoardCell()
+        public BoardCell(int row, int column, ChessGame chessGame)
         {
             InitializeComponent();
+
+            _row = row;
+            _column = column;
+            _chessGame = chessGame;
         }
 
         public void Clear()
@@ -39,20 +49,18 @@ namespace ChessNet.Desktop.ChessGameControls
                 _bitmapIimage.StreamSource.Dispose();
         }
 
-        public void SetPiece(Piece piece) => SetPiece(piece.Color, piece.GetTypeEnum());
-
-        public void SetPiece(PieceColor color, PieceType piece)
+        public void SetPiece(Piece piece)
         {
-            bool isWhite = color == PieceColor.White;
+            Piece = piece;
 
-            byte[] image = piece switch
+            byte[] image = Piece.GetTypeEnum() switch
             {
-                PieceType.Pawn => isWhite ? ChessNet.Resources.Images.W_Pawn : ChessNet.Resources.Images.B_Pawn,
-                PieceType.King => isWhite ? ChessNet.Resources.Images.W_King : ChessNet.Resources.Images.B_King,
-                PieceType.Queen => isWhite ? ChessNet.Resources.Images.W_Queen : ChessNet.Resources.Images.B_Queen,
-                PieceType.Rook => isWhite ? ChessNet.Resources.Images.W_Rook : ChessNet.Resources.Images.B_Rook,
-                PieceType.Bishop => isWhite ? ChessNet.Resources.Images.W_Bishop : ChessNet.Resources.Images.B_Bishop,
-                PieceType.Knight => isWhite ? ChessNet.Resources.Images.W_Knight : ChessNet.Resources.Images.B_Knight,
+                PieceType.Pawn => Piece.IsWhite ? ChessNet.Resources.Images.W_Pawn : ChessNet.Resources.Images.B_Pawn,
+                PieceType.King => Piece.IsWhite ? ChessNet.Resources.Images.W_King : ChessNet.Resources.Images.B_King,
+                PieceType.Queen => Piece.IsWhite ? ChessNet.Resources.Images.W_Queen : ChessNet.Resources.Images.B_Queen,
+                PieceType.Rook => Piece.IsWhite ? ChessNet.Resources.Images.W_Rook : ChessNet.Resources.Images.B_Rook,
+                PieceType.Bishop => Piece.IsWhite ? ChessNet.Resources.Images.W_Bishop : ChessNet.Resources.Images.B_Bishop,
+                PieceType.Knight => Piece.IsWhite ? ChessNet.Resources.Images.W_Knight : ChessNet.Resources.Images.B_Knight,
                 _ => null,
             };
 
@@ -63,6 +71,40 @@ namespace ChessNet.Desktop.ChessGameControls
             _bitmapIimage.EndInit();
 
             CellImage.Source = _bitmapIimage;
+        }
+
+        private void Grid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragDrop.DoDragDrop(this, this, DragDropEffects.Move);
+            }
+        }
+
+        private void Grid_Drop(object sender, DragEventArgs e)
+        {
+            var data = e.Data.GetData(typeof(BoardCell));
+
+            if (data is BoardCell cell)
+            {
+                BoardPosition from = new(cell._column, cell._row);
+                BoardPosition to = new(this._column, this._row);
+
+                try
+                {
+                    var result = _chessGame.Move(from, to);
+
+                    if (result.IsValid)
+                    {
+                        this.SetPiece(cell.Piece);
+                        cell.Clear();
+                    }
+                }
+                catch
+                {
+                    // TODO: Alerts and information.
+                }
+            }
         }
     }
 }
