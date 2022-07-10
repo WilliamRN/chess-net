@@ -37,7 +37,7 @@ namespace ChessNet.Desktop.ChessGameControls
         public event PlayerMoveEventHandler PlayerMove;
         public delegate void PlayerMoveEventHandler(object sender, PlayerMoveEvent e);
 
-        public BoardTable()
+        public BoardTable(bool isColorInverted = true)
         {
             InitializeComponent();
 
@@ -71,10 +71,10 @@ namespace ChessNet.Desktop.ChessGameControls
                 }
             }
 
-            InitializeBoard();
+            InitializeBoard(isColorInverted);
         }
 
-        private void InitializeBoard()
+        private void InitializeBoard(bool isInverted = true)
         {
             for (int i = 0; i < _columns; i++)
                 BoardGrid.ColumnDefinitions.Add(new ColumnDefinition());
@@ -82,12 +82,12 @@ namespace ChessNet.Desktop.ChessGameControls
             for (int i = 0; i < _rows; i++)
                 BoardGrid.RowDefinitions.Add(new RowDefinition());
 
-            for (int r = _rows - 1; r >= 0; r--)
+            for (int r = 0; r < _rows; r++)
             {
                 for (int c = 0; c < _columns; c++)
                 {
                     BoardGrid.Children.Add(_board[r, c]);
-                    _board[r, c].SetValue(Grid.RowProperty, r);
+                    _board[r, c].SetValue(Grid.RowProperty, isInverted ? _rows - 1 - r : r);
                     _board[r, c].SetValue(Grid.ColumnProperty, c);
                 }
             }
