@@ -59,7 +59,7 @@ namespace ChessNet.Desktop.ChessGameControls
                     _board[r, c] = new(r, c, ChessGame);
                     _board[r, c].CellUpdate += BoardTable_CellUpdate;
                     _board[r, c].CasltingUpdate += BoardTable_CastlingUpdate;
-                    _board[r, c].PlayerMove += BoardTable_PlayerMove;
+                    _board[r, c].PlayerMove += BoardTable_PlayerMove;           
 
                     if (!isEmptyList)
                     {
@@ -82,7 +82,7 @@ namespace ChessNet.Desktop.ChessGameControls
             for (int i = 0; i < _rows; i++)
                 BoardGrid.RowDefinitions.Add(new RowDefinition());
 
-            for (int r = 0; r < _rows; r++)
+            for (int r = _rows - 1; r >= 0; r--)
             {
                 for (int c = 0; c < _columns; c++)
                 {
@@ -121,13 +121,14 @@ namespace ChessNet.Desktop.ChessGameControls
         {
             PlayerMove.Invoke(sender, e);
 
-            if (ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.Black)
+            if (ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.Black &&
+                !ChessGame.IsFinished)
             {
                 var move = _aiPlayer.GetNextMove();
 
                 try
                 {
-                    var result = ChessGame.Move(move.FromPosition, move.ToPosition);
+                    var result = ChessGame.Move(move);
 
                     if (result.IsValid)
                     {

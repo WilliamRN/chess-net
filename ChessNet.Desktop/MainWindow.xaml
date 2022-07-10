@@ -6,6 +6,6 @@
         xmlns:local="clr-namespace:ChessNet.Desktop"
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="900" KeyUp="Window_KeyUp">
-    <Grid Name="MainWindowGrid" Loaded="MainWindowGrid_Loaded">
+    <Grid Name="MainWindowGrid">
     </Grid>
 </Window>

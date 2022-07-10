@@ -33,8 +33,12 @@ namespace ChessNet.Desktop
 
         private void ResetBoard()
         {
+            MainWindowGrid.Children.Clear();
+
             _boardTable = new();
             _boardTable.PlayerMove += _boardTable_PlayerMove;
+            MainWindowGrid.Children.Add(_boardTable);
+
             Title = $"[ChessNet] Current Player: White";
         }
 
@@ -49,11 +53,6 @@ namespace ChessNet.Desktop
                 var captured = e.MoveResult.CapturedPiece;
                 Title += $", a {captured.Color} {captured.AsString()} was captured!";
             }
-        }
-
-        private void MainWindowGrid_Loaded(object sender, RoutedEventArgs e)
-        {
-            MainWindowGrid.Children.Add(_boardTable);
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
