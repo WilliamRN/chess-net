@@ -1,4 +1,6 @@
-﻿using ChessNet.Data.Models;
+﻿using ChessNet.AI.RamdomInputsAI;
+using ChessNet.Data.Interfaces;
+using ChessNet.Data.Models;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Desktop.Models.Events;
 using ChessNet.Utilities.Extensions;
@@ -24,6 +26,8 @@ namespace ChessNet.Desktop.ChessGameControls
     /// </summary>
     public partial class BoardTable : UserControl
     {
+        private IPlayer _aiPlayer;
+
         private int _rows { get; set; }
         private int _columns { get; set; }
         private BoardCell[,] _board { get; set; }
@@ -42,6 +46,7 @@ namespace ChessNet.Desktop.ChessGameControls
             _rows = ChessGame.Board.Rows;
             _columns = ChessGame.Board.Columns;
             _board = new BoardCell[ChessGame.Board.Rows, ChessGame.Board.Columns];
+            _aiPlayer = new RamdomAI(ChessGame, Data.Enums.PieceColor.Black);
 
             var pieces = ChessGame.Board.GetPieces();
             var isEmptyList = pieces.IsEmpty();
@@ -115,6 +120,34 @@ namespace ChessNet.Desktop.ChessGameControls
         private void BoardTable_PlayerMove(object sender, PlayerMoveEvent e)
         {
             PlayerMove.Invoke(sender, e);
+
+            if (ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.Black)
+            {
+                var move = _aiPlayer.GetNextMove();
+
+                try
+                {
+                    var result = ChessGame.Move(move.FromPosition, move.ToPosition);
+
+                    if (result.IsValid)
+                    {
+                        if (result.IsCastling)
+                            BoardTable_CastlingUpdate(this, new(move.FromPiece.Color));
+
+                        BoardTable_CellUpdate(this, new(move.FromPosition));
+                        BoardTable_CellUpdate(this, new(move.ToPosition));
+
+                        if (result.IsCapture && result.CapturedPiece.Position != move.ToPosition)
+                            BoardTable_CellUpdate(this, new(result.CapturedPiece.Position));
+                    }
+
+                    BoardTable_PlayerMove(this, new(result));
+                }
+                catch
+                {
+                    // TODO: Alerts and information.
+                }
+            }
         }
     }
 }
