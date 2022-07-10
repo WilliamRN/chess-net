@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace ChessNet.Desktop.Models.Events
 {
-    public class CellUpdateEvent
+    public class CasltingUpdateEvent
     {
-        public BoardPosition Position { get; set; }
+        public PieceColor Color { get; set; }
 
-        public CellUpdateEvent(BoardPosition position)
+        public CasltingUpdateEvent(PieceColor color)
         {
-            Position = position;
+            Color = color;
         }
     }
 }

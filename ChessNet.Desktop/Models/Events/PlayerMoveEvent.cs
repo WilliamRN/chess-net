@@ -1,4 +1,5 @@
 ﻿using ChessNet.Data.Enums;
+using ChessNet.Data.Models;
 using ChessNet.Data.Structs;
 using System;
 using System.Collections.Generic;
@@ -8,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace ChessNet.Desktop.Models.Events
 {
-    public class CellUpdateEvent
+    public class PlayerMoveEvent
     {
-        public BoardPosition Position { get; set; }
+        public MoveResult MoveResult { get; set; }
 
-        public CellUpdateEvent(BoardPosition position)
+        public PlayerMoveEvent(MoveResult moveResult)
         {
-            Position = position;
+            MoveResult = moveResult;
         }
     }
 }

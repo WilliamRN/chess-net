@@ -38,6 +38,12 @@ namespace ChessNet.Desktop.ChessGameControls
         public event CellUpdateEventHandler CellUpdate;
         public delegate void CellUpdateEventHandler(object sender, CellUpdateEvent e);
 
+        public event CasltingUpdateEventHandler CasltingUpdate;
+        public delegate void CasltingUpdateEventHandler(object sender, CasltingUpdateEvent e);
+
+        public event PlayerMoveEventHandler PlayerMove;
+        public delegate void PlayerMoveEventHandler(object sender, PlayerMoveEvent e);
+
         public BoardCell(int row, int column, ChessGame chessGame)
         {
             InitializeComponent();
@@ -111,12 +117,17 @@ namespace ChessNet.Desktop.ChessGameControls
 
                     if (result.IsValid)
                     {
+                        if (result.IsCastling)
+                            CasltingUpdate.Invoke(this, new(cell.Piece.Color));
+
                         CellUpdate.Invoke(this, new(from));
                         CellUpdate.Invoke(this, new(to));
 
                         if (result.IsCapture && result.CapturedPiece.Position != to)
                             CellUpdate.Invoke(this, new(result.CapturedPiece.Position));
                     }
+
+                    PlayerMove.Invoke(this, new(result));
                 }
                 catch
                 {

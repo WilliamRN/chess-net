@@ -1,4 +1,6 @@
 ﻿using ChessNet.Data.Models;
+using ChessNet.Data.Models.Pieces;
+using ChessNet.Desktop.Models.Events;
 using ChessNet.Utilities.Extensions;
 using System;
 using System.Collections.Generic;
@@ -28,6 +30,9 @@ namespace ChessNet.Desktop.ChessGameControls
         
         public ChessGame ChessGame { get; set; }
 
+        public event PlayerMoveEventHandler PlayerMove;
+        public delegate void PlayerMoveEventHandler(object sender, PlayerMoveEvent e);
+
         public BoardTable()
         {
             InitializeComponent();
@@ -48,6 +53,8 @@ namespace ChessNet.Desktop.ChessGameControls
                 {
                     _board[r, c] = new(r, c, ChessGame);
                     _board[r, c].CellUpdate += BoardTable_CellUpdate;
+                    _board[r, c].CasltingUpdate += BoardTable_CastlingUpdate;
+                    _board[r, c].PlayerMove += BoardTable_PlayerMove;
 
                     if (!isEmptyList)
                     {
@@ -85,6 +92,29 @@ namespace ChessNet.Desktop.ChessGameControls
         {
             var boardCell = _board[e.Position.Row, e.Position.Column];
             boardCell.Piece = ChessGame.Board.GetPiece(boardCell.BoardPosition);
+        }
+
+        private void BoardTable_CastlingUpdate(object sender, Models.Events.CasltingUpdateEvent e)
+        {
+            var colorPieces = ChessGame.Board.GetPieces(e.Color).Where(p => p is King || p is Rook);
+
+            foreach(Piece p in colorPieces)
+            {
+                var boardCell = _board[p.Position.Row, p.Position.Column];
+                boardCell.Piece = ChessGame.Board.GetPiece(boardCell.BoardPosition);
+            }
+            int colorRow = colorPieces.FirstOrDefault().Position.Row;
+
+            BoardCell cornerLeft = _board[colorRow, 0];
+            BoardCell cornerRight = _board[colorRow, _columns - 1];
+
+            cornerLeft.Piece = ChessGame.Board.GetPiece(cornerLeft.BoardPosition);
+            cornerRight.Piece = ChessGame.Board.GetPiece(cornerRight.BoardPosition);
+        }
+
+        private void BoardTable_PlayerMove(object sender, PlayerMoveEvent e)
+        {
+            PlayerMove.Invoke(sender, e);
         }
     }
 }

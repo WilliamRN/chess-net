@@ -34,6 +34,21 @@ namespace ChessNet.Desktop
         private void ResetBoard()
         {
             _boardTable = new();
+            _boardTable.PlayerMove += _boardTable_PlayerMove;
+            Title = $"[ChessNet] Current Player: White";
+        }
+
+        private void _boardTable_PlayerMove(object sender, Models.Events.PlayerMoveEvent e)
+        {
+            Title = $"[ChessNet] Current Player: {_boardTable.ChessGame.CurrentPlayer.Color}, " +
+                $"LastMove: {e.MoveResult.From.AsString()} to {e.MoveResult.To.AsString()}, " +
+                $"State: {_boardTable.ChessGame.State}";
+
+            if (e.MoveResult.IsCapture)
+            {
+                var captured = e.MoveResult.CapturedPiece;
+                Title += $", a {captured.Color} {captured.AsString()} was captured!";
+            }
         }
 
         private void MainWindowGrid_Loaded(object sender, RoutedEventArgs e)
