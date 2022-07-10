@@ -1,6 +1,7 @@
 ﻿using ChessNet.Data.Enums;
 using ChessNet.Data.Models;
 using ChessNet.Data.Structs;
+using ChessNet.Desktop.Models.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,8 +30,13 @@ namespace ChessNet.Desktop.ChessGameControls
         private BitmapImage _bitmapIimage { get; set; }
         private int _row { get; set; }
         private int _column { get; set; }
-        
-        public Piece Piece { get; set; }
+
+        public Piece _piece;
+        public Piece Piece { get => _piece; set => SetPiece(value); }
+        public BoardPosition BoardPosition { get; private set; }
+
+        public event CellUpdateEventHandler CellUpdate;
+        public delegate void CellUpdateEventHandler(object sender, CellUpdateEvent e);
 
         public BoardCell(int row, int column, ChessGame chessGame)
         {
@@ -39,28 +45,37 @@ namespace ChessNet.Desktop.ChessGameControls
             _row = row;
             _column = column;
             _chessGame = chessGame;
+            BoardPosition = new(column, row);
         }
 
         public void Clear()
         {
+            _piece = null;
+
             CellImage.Source = null;
 
             if (_bitmapIimage != null)
                 _bitmapIimage.StreamSource.Dispose();
         }
 
-        public void SetPiece(Piece piece)
+        private void SetPiece(Piece piece)
         {
-            Piece = piece;
+            if (piece is null)
+            {
+                Clear();
+                return;
+            }
+
+            _piece = piece;
 
             byte[] image = Piece.GetTypeEnum() switch
             {
-                PieceType.Pawn => Piece.IsWhite ? ChessNet.Resources.Images.W_Pawn : ChessNet.Resources.Images.B_Pawn,
-                PieceType.King => Piece.IsWhite ? ChessNet.Resources.Images.W_King : ChessNet.Resources.Images.B_King,
-                PieceType.Queen => Piece.IsWhite ? ChessNet.Resources.Images.W_Queen : ChessNet.Resources.Images.B_Queen,
-                PieceType.Rook => Piece.IsWhite ? ChessNet.Resources.Images.W_Rook : ChessNet.Resources.Images.B_Rook,
-                PieceType.Bishop => Piece.IsWhite ? ChessNet.Resources.Images.W_Bishop : ChessNet.Resources.Images.B_Bishop,
-                PieceType.Knight => Piece.IsWhite ? ChessNet.Resources.Images.W_Knight : ChessNet.Resources.Images.B_Knight,
+                PieceType.Pawn => _piece.IsWhite ? ChessNet.Resources.Images.W_Pawn : ChessNet.Resources.Images.B_Pawn,
+                PieceType.King => _piece.IsWhite ? ChessNet.Resources.Images.W_King : ChessNet.Resources.Images.B_King,
+                PieceType.Queen => _piece.IsWhite ? ChessNet.Resources.Images.W_Queen : ChessNet.Resources.Images.B_Queen,
+                PieceType.Rook => _piece.IsWhite ? ChessNet.Resources.Images.W_Rook : ChessNet.Resources.Images.B_Rook,
+                PieceType.Bishop => _piece.IsWhite ? ChessNet.Resources.Images.W_Bishop : ChessNet.Resources.Images.B_Bishop,
+                PieceType.Knight => _piece.IsWhite ? ChessNet.Resources.Images.W_Knight : ChessNet.Resources.Images.B_Knight,
                 _ => null,
             };
 
@@ -75,7 +90,7 @@ namespace ChessNet.Desktop.ChessGameControls
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed && this.Piece != null)
             {
                 DragDrop.DoDragDrop(this, this, DragDropEffects.Move);
             }
@@ -96,8 +111,11 @@ namespace ChessNet.Desktop.ChessGameControls
 
                     if (result.IsValid)
                     {
-                        this.SetPiece(cell.Piece);
-                        cell.Clear();
+                        CellUpdate.Invoke(this, new(from));
+                        CellUpdate.Invoke(this, new(to));
+
+                        if (result.IsCapture && result.CapturedPiece.Position != to)
+                            CellUpdate.Invoke(this, new(result.CapturedPiece.Position));
                     }
                 }
                 catch

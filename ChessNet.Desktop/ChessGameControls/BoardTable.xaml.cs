@@ -47,13 +47,14 @@ namespace ChessNet.Desktop.ChessGameControls
                 for (int c = 0; c < ChessGame.Board.Columns; c++)
                 {
                     _board[r, c] = new(r, c, ChessGame);
+                    _board[r, c].CellUpdate += BoardTable_CellUpdate;
 
                     if (!isEmptyList)
                     {
                         piece = pieces.FirstOrDefault(p => p.Position.Column == c && p.Position.Row == r);
 
                         if (piece != null)
-                            _board[r, c].SetPiece(piece);
+                            _board[r, c].Piece = piece;
                     }
                 }
             }
@@ -78,6 +79,12 @@ namespace ChessNet.Desktop.ChessGameControls
                     _board[r, c].SetValue(Grid.ColumnProperty, c);
                 }
             }
+        }
+
+        private void BoardTable_CellUpdate(object sender, Models.Events.CellUpdateEvent e)
+        {
+            var boardCell = _board[e.Position.Row, e.Position.Column];
+            boardCell.Piece = ChessGame.Board.GetPiece(boardCell.BoardPosition);
         }
     }
 }
