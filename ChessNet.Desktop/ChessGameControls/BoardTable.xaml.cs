@@ -56,7 +56,7 @@ namespace ChessNet.Desktop.ChessGameControls
             {
                 for (int c = 0; c < ChessGame.Board.Columns; c++)
                 {
-                    _board[r, c] = new(r, c, ChessGame);
+                    _board[r, c] = new(new(c, r), ChessGame);
                     _board[r, c].CellUpdate += BoardTable_CellUpdate;
                     _board[r, c].CasltingUpdate += BoardTable_CastlingUpdate;
                     _board[r, c].PlayerMove += BoardTable_PlayerMove;           
@@ -93,13 +93,13 @@ namespace ChessNet.Desktop.ChessGameControls
             }
         }
 
-        private void BoardTable_CellUpdate(object sender, Models.Events.CellUpdateEvent e)
+        private void BoardTable_CellUpdate(object sender, CellUpdateEvent e)
         {
             var boardCell = _board[e.Position.Row, e.Position.Column];
             boardCell.Piece = ChessGame.Board.GetPiece(boardCell.BoardPosition);
         }
 
-        private void BoardTable_CastlingUpdate(object sender, Models.Events.CasltingUpdateEvent e)
+        private void BoardTable_CastlingUpdate(object sender, CasltingUpdateEvent e)
         {
             var colorPieces = ChessGame.Board.GetPieces(e.Color).Where(p => p is King || p is Rook);
 

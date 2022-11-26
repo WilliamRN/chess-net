@@ -14,10 +14,9 @@ namespace ChessNet.Data.Models.Pieces
 
         }
 
-        public override string GetSymbol()
-        {
-            return Color == PieceColor.White ? "♔" : "♚";
-        }
+        public override string Symbol => Color == PieceColor.White ? "♔" : "♚";
+
+        public override PieceType PieceType => PieceType.King;
 
         public override IEnumerable<Movement> GetMovements()
         {

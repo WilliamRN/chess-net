@@ -28,8 +28,6 @@ namespace ChessNet.Desktop.ChessGameControls
         private readonly ChessGame _chessGame;
         private MemoryStream _imageStream { get; set; }
         private BitmapImage _bitmapIimage { get; set; }
-        private int _row { get; set; }
-        private int _column { get; set; }
 
         public Piece _piece;
         public Piece Piece { get => _piece; set => SetPiece(value); }
@@ -44,14 +42,12 @@ namespace ChessNet.Desktop.ChessGameControls
         public event PlayerMoveEventHandler PlayerMove;
         public delegate void PlayerMoveEventHandler(object sender, PlayerMoveEvent e);
 
-        public BoardCell(int row, int column, ChessGame chessGame)
+        public BoardCell(BoardPosition boardPosition, ChessGame chessGame)
         {
             InitializeComponent();
 
-            _row = row;
-            _column = column;
             _chessGame = chessGame;
-            BoardPosition = new(column, row);
+            BoardPosition = boardPosition;
         }
 
         public void Clear()
@@ -74,7 +70,7 @@ namespace ChessNet.Desktop.ChessGameControls
 
             _piece = piece;
 
-            byte[] image = Piece.GetTypeEnum() switch
+            byte[] image = _piece.PieceType switch
             {
                 PieceType.Pawn => _piece.IsWhite ? ChessNet.Resources.Images.W_Pawn : ChessNet.Resources.Images.B_Pawn,
                 PieceType.King => _piece.IsWhite ? ChessNet.Resources.Images.W_King : ChessNet.Resources.Images.B_King,
@@ -108,8 +104,8 @@ namespace ChessNet.Desktop.ChessGameControls
 
             if (data is BoardCell cell)
             {
-                BoardPosition from = new(cell._column, cell._row);
-                BoardPosition to = new(this._column, this._row);
+                BoardPosition from = cell.BoardPosition;
+                BoardPosition to = this.BoardPosition;
 
                 try
                 {

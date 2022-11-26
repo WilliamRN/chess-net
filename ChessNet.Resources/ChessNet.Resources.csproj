@@ -7,18 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="Images.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Images.resx</DependentUpon>
-    </Compile>
+    <ProjectReference Include="..\ChessNet.Utilities\ChessNet.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Images.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Images.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <None Update="Resources\Images\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

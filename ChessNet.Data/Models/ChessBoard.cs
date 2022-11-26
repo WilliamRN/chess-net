@@ -247,7 +247,7 @@ namespace ChessNet.Data.Models
 
                 for (int c = 0; c < Columns; c++)
                 {
-                    sb.Append($"[{(_board[c, r] != null ? _board[c, r].GetSymbol() : "﹘")}]");
+                    sb.Append($"[{(_board[c, r] != null ? _board[c, r].Symbol : "﹘")}]");
                 }
 
                 sb.Append("\n");
