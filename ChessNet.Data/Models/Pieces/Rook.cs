@@ -27,7 +27,7 @@ namespace ChessNet.Data.Models.Pieces
                 .Where(m => IsValidMoveForCurrentKingPosition(this, m));
         }
 
-        internal static IEnumerable<Rook> GetRookAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
+        public override IEnumerable<Piece> GetAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
         {
             Piece attacker;
             var attackerColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;

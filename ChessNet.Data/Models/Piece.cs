@@ -67,6 +67,8 @@ namespace ChessNet.Data.Models
 
         public abstract PieceType PieceType { get; }
 
+        public abstract IEnumerable<Piece> GetAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position);
+
         internal void SetStateGetter(Func<GameStates> stateGetter) => _stateGetter = stateGetter;
 
         internal static IEnumerable<Movement> CheckLineOfPositionsBasedOnPathStep(ChessBoard chessBoard, BoardPosition position, BoardPosition step, PieceColor color)

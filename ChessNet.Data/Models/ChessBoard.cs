@@ -205,13 +205,20 @@ namespace ChessNet.Data.Models
             else
                 previewBoard = this;
 
-            return result
-                .Concat(King.GetKingAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Pawn.GetPawnAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Knight.GetKnightAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Bishop.GetBishopAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Rook.GetRookAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Queen.GetQueenAttackersFor(previewBoard, piece.Color, position));
+            var oposingPieceTypes = previewBoard
+                .GetPieces(piece.Color == PieceColor.White ? PieceColor.Black : PieceColor.White)
+                .GroupBy(p => p.PieceType, (key, g) => g.OrderBy(e => e.PieceType).FirstOrDefault())
+                .Where(p => p != null);
+
+            foreach (var pieceType in oposingPieceTypes)
+            {
+                foreach (var attacker in pieceType.GetAttackersFor(previewBoard, piece.Color, position))
+                {
+                    yield return attacker;
+                }
+            }
+
+            yield break;
         }
 
         public IEnumerable<Piece> AttackersFor(Piece piece) => 

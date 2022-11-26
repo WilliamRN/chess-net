@@ -48,6 +48,10 @@ namespace ChessNet.Desktop.ChessGameControls
 
             _chessGame = chessGame;
             BoardPosition = boardPosition;
+            
+            if ((boardPosition.Column % 2 == 0 && boardPosition.Row % 2 == 0) ||
+                (boardPosition.Column % 2 == 1 && boardPosition.Row % 2 == 1))
+                CellBackGroundPanel.Background = Brushes.SaddleBrown;
         }
 
         public void Clear()

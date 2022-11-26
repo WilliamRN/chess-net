@@ -87,7 +87,7 @@ namespace ChessNet.Data.Models.Pieces
             }
         }
 
-        internal static IEnumerable<King> GetKingAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
+        public override IEnumerable<Piece> GetAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
         {
             Piece attacker;
             var attackerColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;
