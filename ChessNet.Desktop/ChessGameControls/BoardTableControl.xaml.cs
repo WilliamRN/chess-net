@@ -26,8 +26,11 @@ namespace ChessNet.Desktop.ChessGameControls
     /// </summary>
     public partial class BoardTableControl : UserControl
     {
-        private IPlayer _aiPlayer;
+        private IPlayer _aiPlayerBlack;
+        private IPlayer _aiPlayerWhite;
+        private const int AI_DELAY = 200;
 
+        private bool _isAiOnly { get; set; }
         private int _rows { get; set; }
         private int _columns { get; set; }
         private BoardCellControl[,] _board { get; set; }
@@ -36,20 +39,25 @@ namespace ChessNet.Desktop.ChessGameControls
 
         public event EventHandler<PlayerMoveResultEvent> PlayerMove;
 
-        public BoardTableControl(bool isColorInverted = true)
+        public BoardTableControl(bool isColorInverted = true, bool isAiOnly = false)
         {
             InitializeComponent();
 
             ChessGame = new();
             ChessGame.BoardUpdate += ChessGame_BoardUpdate;
 
+            _isAiOnly = isAiOnly;
             _rows = ChessGame.Board.Rows;
             _columns = ChessGame.Board.Columns;
             _board = new BoardCellControl[_rows, _columns];
-            _aiPlayer = new RamdomAI(ChessGame, Data.Enums.PieceColor.Black);
+            _aiPlayerBlack = new RamdomAI(ChessGame, Data.Enums.PieceColor.Black);
+            _aiPlayerWhite = new RamdomAI(ChessGame, Data.Enums.PieceColor.White);
 
             InitializeCellControls();
             InitializeBoardGrid(isColorInverted);
+
+            if (_isAiOnly)
+                Task.Run(NextAIMove);
         }
 
         private void InitializeCellControls()
@@ -95,19 +103,29 @@ namespace ChessNet.Desktop.ChessGameControls
         {
             try
             {
-                var result = ChessGame.Move(new(e.From, e.To));
+                var result = ChessGame.Move(e.Move);
                 PlayerMove?.Invoke(this, new(result, e.Player, ChessGame));
             }
-            catch
+            catch (Exception ex)
             {
-                // TODO: Alerts and information.
+                PlayerMove?.Invoke(this, new(ex, e.Player, ChessGame));
             }
 
-            if (ChessGame.CurrentPlayer.Color == _aiPlayer.GetColor() &&
-                !ChessGame.IsFinished)
+            Task.Run(NextAIMove);
+        }
+
+        private void NextAIMove()
+        {
+            IPlayer player = ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.Black
+                ? _aiPlayerBlack : _isAiOnly ? _aiPlayerWhite : null;
+
+            if (player != null && !ChessGame.IsFinished)
             {
-                var move = _aiPlayer.GetNextMove();
-                BoardTableControl_CellMove(this, new(ChessGame.CurrentPlayer, move.FromPosition, move.ToPosition));
+                if (_isAiOnly)
+                    Task.Delay(AI_DELAY).Wait();
+
+                var move = player.GetNextMove();
+                BoardTableControl_CellMove(this, new(ChessGame.CurrentPlayer, move));
             }
         }
 

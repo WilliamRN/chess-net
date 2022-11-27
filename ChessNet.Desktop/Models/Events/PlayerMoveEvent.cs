@@ -17,6 +17,17 @@ namespace ChessNet.Desktop.Models.Events
         public GameStates State { get; set; }
         public int WhiteScore { get; set; }
         public int BlackScore { get; set; }
+        public Exception MoveException { get; set; }
+
+        public PlayerMoveResultEvent(Exception ex, Player player, ChessGame game)
+        {
+            MoveException = ex;
+            Player = player;
+            CurrentPlayer = game.CurrentPlayer;
+            State = game.State;
+            WhiteScore = game.WhiteScore;
+            BlackScore = game.BlackScore;
+        }
 
         public PlayerMoveResultEvent(MoveResult moveResult, Player player, ChessGame game)
         {

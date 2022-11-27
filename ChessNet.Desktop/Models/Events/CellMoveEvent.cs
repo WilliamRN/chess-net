@@ -12,14 +12,12 @@ namespace ChessNet.Desktop.Models.Events
     public class CellMoveEvent
     {
         public Player Player { get; set; }
-        public BoardPosition From { get; set; }
-        public BoardPosition To { get; set; }
+        public PieceMovement Move { get; set; }
 
-        public CellMoveEvent(Player player, BoardPosition from, BoardPosition to)
+        public CellMoveEvent(Player player, PieceMovement move)
         {
             Player = player;
-            From = from;
-            To = to;
+            Move = move;
         }
     }
 }

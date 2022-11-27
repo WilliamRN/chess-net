@@ -41,7 +41,7 @@ namespace ChessNet.Desktop.ChessGameControls
 
             _chessGame = chessGame;
             BoardPosition = boardPosition;
-            
+
             if ((boardPosition.Column % 2 == 0 && boardPosition.Row % 2 == 0) ||
                 (boardPosition.Column % 2 == 1 && boardPosition.Row % 2 == 1))
                 CellBackGroundPanel.Background = Brushes.SaddleBrown;
@@ -51,10 +51,13 @@ namespace ChessNet.Desktop.ChessGameControls
         {
             _piece = null;
 
-            CellImage.Source = null;
-
-            if (_bitmapIimage != null)
-                _bitmapIimage.StreamSource.Dispose();
+            Dispatcher.Invoke(() =>
+            {
+                CellImage.Source = null;
+                
+                if (_bitmapIimage != null)
+                    _bitmapIimage.StreamSource.Dispose();
+            });
         }
 
         private void SetPiece(Piece piece)
@@ -78,13 +81,16 @@ namespace ChessNet.Desktop.ChessGameControls
                 _ => null,
             };
 
-            _imageStream = new(image);
-            _bitmapIimage = new BitmapImage();
-            _bitmapIimage.BeginInit();
-            _bitmapIimage.StreamSource = _imageStream;
-            _bitmapIimage.EndInit();
+            Dispatcher.Invoke(() =>
+            {
+                _imageStream = new(image);
+                _bitmapIimage = new BitmapImage();
+                _bitmapIimage.BeginInit();
+                _bitmapIimage.StreamSource = _imageStream;
+                _bitmapIimage.EndInit();
 
-            CellImage.Source = _bitmapIimage;
+                CellImage.Source = _bitmapIimage;
+            });
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
@@ -101,9 +107,8 @@ namespace ChessNet.Desktop.ChessGameControls
 
             if (data is BoardCellControl cell)
             {
-                BoardPosition from = cell.BoardPosition;
-                BoardPosition to = this.BoardPosition;
-                CellMove?.Invoke(this, new CellMoveEvent(_chessGame.CurrentPlayer, from, to));
+                var move = new PieceMovement(cell.BoardPosition, this.BoardPosition);
+                CellMove?.Invoke(this, new CellMoveEvent(_chessGame.CurrentPlayer, move));
             }
         }
     }
