@@ -63,7 +63,11 @@ namespace ChessNet.Data.Models
 
         public abstract IEnumerable<Movement> GetMovements();
 
-        public abstract string GetSymbol();
+        public abstract string Symbol { get; }
+
+        public abstract PieceType PieceType { get; }
+
+        public abstract IEnumerable<Piece> GetAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position);
 
         internal void SetStateGetter(Func<GameStates> stateGetter) => _stateGetter = stateGetter;
 

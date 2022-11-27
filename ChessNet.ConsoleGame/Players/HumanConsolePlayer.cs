@@ -17,9 +17,8 @@ namespace ChessNet.ConsoleGame.Players
             _color = color;
         }
 
-        public PieceColor GetColor() => _color;
-
-        public string GetName() => _name;
+        public PieceColor Color => _color;
+        public string Name => _name;
 
         public PieceMovement GetNextMove()
         {
