@@ -1,6 +1,7 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
 using ChessNet.Data.Extensions;
+using ChessNet.Data.Models.Events;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using System.Text;
@@ -16,6 +17,8 @@ namespace ChessNet.Data.Models
         public Movement LastMove { get; private set; }
         public object LastMovedPiece { get; private set; }
 
+        internal event EventHandler<BoardUpdateEvent> BoardUpdate;
+
         public ChessBoard(int columns = DefaultValues.BOARD_SIZE, int rows = DefaultValues.BOARD_SIZE)
         {
             Columns = columns;
@@ -29,6 +32,7 @@ namespace ChessNet.Data.Models
                 GetPiece(piece.Position) == null)
             {
                 _board[piece.Position.Column, piece.Position.Row] = piece;
+                BoardUpdate?.Invoke(this, new(piece.Position, piece));
                 piece.Board = this;
                 return true;
             }
@@ -45,6 +49,7 @@ namespace ChessNet.Data.Models
                 if (currentPiece != null)
                 {
                     _board[currentPiece.Position.Column, currentPiece.Position.Row] = null;
+                    BoardUpdate?.Invoke(this, new(currentPiece.Position, null));
                     piece.Board = currentPiece.Board = null;
                     return true;
                 }
@@ -124,6 +129,9 @@ namespace ChessNet.Data.Models
             LastMove = pieceMovement;
             LastMovedPiece = piece;
 
+            BoardUpdate?.Invoke(this, new(from, null));
+            BoardUpdate?.Invoke(this, new(to, originPiece));
+
             return destinationPiece;
         }
 
@@ -146,6 +154,10 @@ namespace ChessNet.Data.Models
             LastMove = pieceMovement;
             LastMovedPiece = piece;
 
+            BoardUpdate?.Invoke(this, new(capturedFrom, null));
+            BoardUpdate?.Invoke(this, new(from, null));
+            BoardUpdate?.Invoke(this, new(to, originPiece));
+
             return capturedPiece;
         }
 
@@ -154,16 +166,23 @@ namespace ChessNet.Data.Models
             Piece rook = pieceMovement.PieceAtDestination;
             int rookStep = (king.Position.Column - pieceMovement.Destination.Column) > 0 ? -1 : 1;
 
+            BoardPosition rookPreviousPosition = rook.Position;
             BoardPosition rookPosition = new(king.Position.Column + rookStep, king.Position.Row);
+            BoardPosition kingPreviousPosition = king.Position;
             BoardPosition kingPosition = pieceMovement.Destination;
 
-            _board[rook.Position.Column, rook.Position.Row] = null;
+            _board[rookPreviousPosition.Column, rookPreviousPosition.Row] = null;
             _board[rookPosition.Column, rookPosition.Row] = rook;
             rook.Position = rookPosition;
 
-            _board[king.Position.Column, king.Position.Row] = null;
+            _board[kingPreviousPosition.Column, kingPreviousPosition.Row] = null;
             _board[kingPosition.Column, kingPosition.Row] = king;
             king.Position = kingPosition;
+
+            BoardUpdate?.Invoke(this, new(rookPreviousPosition, null));
+            BoardUpdate?.Invoke(this, new(rookPosition, rook));
+            BoardUpdate?.Invoke(this, new(kingPreviousPosition, null));
+            BoardUpdate?.Invoke(this, new(kingPosition, king));
 
             return null;
         }

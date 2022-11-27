@@ -1,6 +1,7 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
 using ChessNet.Data.Extensions;
+using ChessNet.Data.Models.Events;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 
@@ -21,6 +22,8 @@ namespace ChessNet.Data.Models
         public int BlackScore => _playerBlack.Points;
         public bool IsFinished => GameEndStates.LIST.Contains(State);
 
+        public event EventHandler<BoardUpdateEvent> BoardUpdate;
+
         public ChessGame(IEnumerable<Piece> pieces, PieceColor turn = DefaultValues.STARTING_COLOR)
         {
             Board = new ChessBoard();
@@ -30,6 +33,13 @@ namespace ChessNet.Data.Models
             _turn = turn;
 
             AddPiecesRange(pieces);
+
+            Board.BoardUpdate += Board_BoardUpdate;
+        }
+
+        private void Board_BoardUpdate(object? sender, Events.BoardUpdateEvent e)
+        {
+            BoardUpdate?.Invoke(sender, e);
         }
 
         public ChessGame() : this(InitialBoardPlacements.DEFAULT)

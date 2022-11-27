@@ -24,32 +24,31 @@ namespace ChessNet.Desktop.ChessGameControls
     /// <summary>
     /// Interaction logic for BoardTable.xaml
     /// </summary>
-    public partial class BoardTable : UserControl
+    public partial class BoardTableControl : UserControl
     {
         private IPlayer _aiPlayer;
 
         private int _rows { get; set; }
         private int _columns { get; set; }
-        private BoardCell[,] _board { get; set; }
+        private BoardCellControl[,] _board { get; set; }
         
         public ChessGame ChessGame { get; set; }
 
-        public event PlayerMoveEventHandler PlayerMove;
-        public delegate void PlayerMoveEventHandler(object sender, PlayerMoveEvent e);
+        public event EventHandler<PlayerMoveEvent> PlayerMove;
 
-        public BoardTable(bool isColorInverted = true)
+        public BoardTableControl(bool isColorInverted = true)
         {
             InitializeComponent();
 
             ChessGame = new();
+            ChessGame.BoardUpdate += ChessGame_BoardUpdate;
 
             _rows = ChessGame.Board.Rows;
             _columns = ChessGame.Board.Columns;
-            _board = new BoardCell[ChessGame.Board.Rows, ChessGame.Board.Columns];
+            _board = new BoardCellControl[ChessGame.Board.Rows, ChessGame.Board.Columns];
             _aiPlayer = new RamdomAI(ChessGame, Data.Enums.PieceColor.Black);
 
             var pieces = ChessGame.Board.GetPieces();
-            var isEmptyList = pieces.IsEmpty();
             Piece piece;
 
             for (int r = 0; r < ChessGame.Board.Rows; r++)
@@ -57,21 +56,21 @@ namespace ChessNet.Desktop.ChessGameControls
                 for (int c = 0; c < ChessGame.Board.Columns; c++)
                 {
                     _board[r, c] = new(new(c, r), ChessGame);
-                    _board[r, c].CellUpdate += BoardTable_CellUpdate;
-                    _board[r, c].CasltingUpdate += BoardTable_CastlingUpdate;
                     _board[r, c].PlayerMove += BoardTable_PlayerMove;           
 
-                    if (!isEmptyList)
-                    {
-                        piece = pieces.FirstOrDefault(p => p.Position.Column == c && p.Position.Row == r);
+                    piece = pieces.FirstOrDefault(p => p.Position.Column == c && p.Position.Row == r);
 
-                        if (piece != null)
-                            _board[r, c].Piece = piece;
-                    }
+                    if (piece != null)
+                        _board[r, c].Piece = piece;
                 }
             }
 
             InitializeBoard(isColorInverted);
+        }
+
+        private void ChessGame_BoardUpdate(object? sender, Data.Models.Events.BoardUpdateEvent e)
+        {
+            _board[e.Position.Row, e.Position.Column].Piece = e.PieceAtPosition;
         }
 
         private void InitializeBoard(bool isInverted = true)
@@ -93,33 +92,9 @@ namespace ChessNet.Desktop.ChessGameControls
             }
         }
 
-        private void BoardTable_CellUpdate(object sender, CellUpdateEvent e)
-        {
-            var boardCell = _board[e.Position.Row, e.Position.Column];
-            boardCell.Piece = ChessGame.Board.GetPiece(boardCell.BoardPosition);
-        }
-
-        private void BoardTable_CastlingUpdate(object sender, CasltingUpdateEvent e)
-        {
-            var colorPieces = ChessGame.Board.GetPieces(e.Color).Where(p => p is King || p is Rook);
-
-            foreach(Piece p in colorPieces)
-            {
-                var boardCell = _board[p.Position.Row, p.Position.Column];
-                boardCell.Piece = ChessGame.Board.GetPiece(boardCell.BoardPosition);
-            }
-            int colorRow = colorPieces.FirstOrDefault().Position.Row;
-
-            BoardCell cornerLeft = _board[colorRow, 0];
-            BoardCell cornerRight = _board[colorRow, _columns - 1];
-
-            cornerLeft.Piece = ChessGame.Board.GetPiece(cornerLeft.BoardPosition);
-            cornerRight.Piece = ChessGame.Board.GetPiece(cornerRight.BoardPosition);
-        }
-
         private void BoardTable_PlayerMove(object sender, PlayerMoveEvent e)
         {
-            PlayerMove.Invoke(sender, e);
+            PlayerMove?.Invoke(sender, e);
 
             if (ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.Black &&
                 !ChessGame.IsFinished)
@@ -128,21 +103,10 @@ namespace ChessNet.Desktop.ChessGameControls
 
                 try
                 {
+                    var player = ChessGame.CurrentPlayer;
                     var result = ChessGame.Move(move);
 
-                    if (result.IsValid)
-                    {
-                        if (result.IsCastling)
-                            BoardTable_CastlingUpdate(this, new(move.FromPiece.Color));
-
-                        BoardTable_CellUpdate(this, new(move.FromPosition));
-                        BoardTable_CellUpdate(this, new(move.ToPosition));
-
-                        if (result.IsCapture && result.CapturedPiece.Position != move.ToPosition)
-                            BoardTable_CellUpdate(this, new(result.CapturedPiece.Position));
-                    }
-
-                    BoardTable_PlayerMove(this, new(result));
+                    PlayerMove?.Invoke(this, new(result, player, ChessGame));
                 }
                 catch
                 {

@@ -23,7 +23,7 @@ namespace ChessNet.Desktop.ChessGameControls
     /// <summary>
     /// Interaction logic for BoardCell.xaml
     /// </summary>
-    public partial class BoardCell : UserControl
+    public partial class BoardCellControl : UserControl
     {
         private readonly ChessGame _chessGame;
         private MemoryStream _imageStream { get; set; }
@@ -33,16 +33,10 @@ namespace ChessNet.Desktop.ChessGameControls
         public Piece Piece { get => _piece; set => SetPiece(value); }
         public BoardPosition BoardPosition { get; private set; }
 
-        public event CellUpdateEventHandler CellUpdate;
-        public delegate void CellUpdateEventHandler(object sender, CellUpdateEvent e);
-
-        public event CasltingUpdateEventHandler CasltingUpdate;
-        public delegate void CasltingUpdateEventHandler(object sender, CasltingUpdateEvent e);
-
         public event PlayerMoveEventHandler PlayerMove;
         public delegate void PlayerMoveEventHandler(object sender, PlayerMoveEvent e);
 
-        public BoardCell(BoardPosition boardPosition, ChessGame chessGame)
+        public BoardCellControl(BoardPosition boardPosition, ChessGame chessGame)
         {
             InitializeComponent();
 
@@ -104,30 +98,18 @@ namespace ChessNet.Desktop.ChessGameControls
 
         private void Grid_Drop(object sender, DragEventArgs e)
         {
-            var data = e.Data.GetData(typeof(BoardCell));
+            var data = e.Data.GetData(typeof(BoardCellControl));
 
-            if (data is BoardCell cell)
+            if (data is BoardCellControl cell)
             {
                 BoardPosition from = cell.BoardPosition;
                 BoardPosition to = this.BoardPosition;
+                var player = _chessGame.CurrentPlayer;
 
                 try
                 {
                     var result = _chessGame.Move(from, to);
-
-                    if (result.IsValid)
-                    {
-                        if (result.IsCastling)
-                            CasltingUpdate.Invoke(this, new(cell.Piece.Color));
-
-                        CellUpdate.Invoke(this, new(from));
-                        CellUpdate.Invoke(this, new(to));
-
-                        if (result.IsCapture && result.CapturedPiece.Position != to)
-                            CellUpdate.Invoke(this, new(result.CapturedPiece.Position));
-                    }
-
-                    PlayerMove.Invoke(this, new(result));
+                    PlayerMove.Invoke(this, new(result, player, _chessGame));
                 }
                 catch
                 {

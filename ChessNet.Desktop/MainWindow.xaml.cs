@@ -23,7 +23,7 @@ namespace ChessNet.Desktop
     /// </summary>
     public partial class MainWindow : Window
     {
-        private BoardTable _boardTable { get; set; }
+        private BoardTableControl _boardTableControl { get; set; }
 
         public MainWindow()
         {
@@ -35,18 +35,18 @@ namespace ChessNet.Desktop
         {
             MainWindowGrid.Children.Clear();
 
-            _boardTable = new();
-            _boardTable.PlayerMove += _boardTable_PlayerMove;
-            MainWindowGrid.Children.Add(_boardTable);
+            _boardTableControl = new();
+            _boardTableControl.PlayerMove += _boardTable_PlayerMove;
+            MainWindowGrid.Children.Add(_boardTableControl);
 
-            Title = $"[ChessNet] Current Player: White";
+            Title = $"[ChessNet] Current Player: {_boardTableControl.ChessGame.CurrentPlayer.Color}";
         }
 
         private void _boardTable_PlayerMove(object sender, Models.Events.PlayerMoveEvent e)
         {
-            Title = $"[ChessNet] Current Player: {_boardTable.ChessGame.CurrentPlayer.Color}, " +
+            Title = $"[ChessNet] Current Player: {e.Player.Color}, " +
                 $"LastMove: {e.MoveResult.From.AsString()} to {e.MoveResult.To.AsString()}, " +
-                $"State: {_boardTable.ChessGame.State}";
+                $"State: {e.State}";
 
             if (e.MoveResult.IsCapture)
             {
