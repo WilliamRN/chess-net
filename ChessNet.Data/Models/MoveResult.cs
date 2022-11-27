@@ -11,19 +11,17 @@ namespace ChessNet.Data.Models
         public BoardPosition To { get; set; }
         public bool IsValid { get; set; }
         public Piece CapturedPiece { get; set; }
-        public bool IsCastling { get; set; }
 
         public bool IsCapture => CapturedPiece != null;
         public bool IsSurrender => State == GameStates.Surrender;
 
-        public MoveResult(PieceColor playerColor, GameStates state, BoardPosition from, BoardPosition to, bool isValid, bool isCastling = false)
+        public MoveResult(PieceColor playerColor, GameStates state, BoardPosition from, BoardPosition to, bool isValid)
         {
             Player = playerColor;
             State = state;
             From = from;
             To = to;
             IsValid = isValid;
-            IsCastling = isCastling;
         }
 
         public MoveResult(PieceColor playerColor, GameStates state, BoardPosition from, BoardPosition to, bool isValid, Piece capturedPiece)

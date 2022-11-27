@@ -94,9 +94,6 @@ namespace ChessNet.Data.Models
 
             if (validMoves.TryMoveTo(boardPosition, out nextMove))
             {
-                if (nextMove.IsCastling)
-                    result.IsCastling = true;
-
                 var capturedPiece = Board.MovePieceAndReturnCaptured(piece, nextMove);
 
                 if (nextMove.IsCaptureFor(CurrentPlayer.Color))
