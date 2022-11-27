@@ -106,7 +106,7 @@ namespace ChessNet.Desktop.ChessGameControls
         {
             if (_disposed) return;
 
-            IPlayer player = ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.Black
+            IPlayer player = ChessGame.CurrentPlayer.Color == _aiPlayerBlack.Color
                 ? _aiPlayerBlack : _isAiOnly ? _aiPlayerWhite : null;
 
             if (player != null && !ChessGame.IsFinished)

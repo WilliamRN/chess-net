@@ -22,9 +22,8 @@ namespace ChessNet.AI.RamdomInputsAI
             _myColor = aiPieceColor;
         }
 
-        public string GetName() => _name;
-
-        public PieceColor GetColor() => _myColor;
+        public string Name => _name;
+        public PieceColor Color => _myColor;
 
         public PieceMovement GetNextMove()
         {
