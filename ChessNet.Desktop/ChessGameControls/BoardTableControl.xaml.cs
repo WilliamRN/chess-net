@@ -1,39 +1,27 @@
 ﻿using ChessNet.AI.RamdomInputsAI;
 using ChessNet.Data.Interfaces;
 using ChessNet.Data.Models;
-using ChessNet.Data.Models.Pieces;
 using ChessNet.Desktop.Models.Events;
-using ChessNet.Utilities.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ChessNet.Desktop.ChessGameControls
 {
     /// <summary>
     /// Interaction logic for BoardTable.xaml
     /// </summary>
-    public partial class BoardTableControl : UserControl
+    public partial class BoardTableControl : UserControl, IDisposable
     {
+        private const int AI_DELAY = 200;
+        private bool _disposed;
+        private bool _isAiOnly;
+        private int _rows;
+        private int _columns;
         private IPlayer _aiPlayerBlack;
         private IPlayer _aiPlayerWhite;
-        private const int AI_DELAY = 200;
-
-        private bool _isAiOnly { get; set; }
-        private int _rows { get; set; }
-        private int _columns { get; set; }
-        private BoardCellControl[,] _board { get; set; }
+        private BoardCellControl[,] _board;
         
         public ChessGame ChessGame { get; set; }
 
@@ -116,13 +104,18 @@ namespace ChessNet.Desktop.ChessGameControls
 
         private void NextAIMove()
         {
+            if (_disposed) return;
+
             IPlayer player = ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.Black
                 ? _aiPlayerBlack : _isAiOnly ? _aiPlayerWhite : null;
 
             if (player != null && !ChessGame.IsFinished)
             {
                 if (_isAiOnly)
+                {
                     Task.Delay(AI_DELAY).Wait();
+                    if (_disposed) return;
+                }
 
                 var move = player.GetNextMove();
                 BoardTableControl_CellMove(this, new(ChessGame.CurrentPlayer, move));
@@ -132,6 +125,29 @@ namespace ChessNet.Desktop.ChessGameControls
         private void ChessGame_BoardUpdate(object? sender, Data.Models.Events.BoardUpdateEvent e)
         {
             _board[e.Position.Row, e.Position.Column].Piece = e.PieceAtPosition;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    ChessGame.BoardUpdate -= ChessGame_BoardUpdate;
+                    ChessGame = null;
+                    _aiPlayerBlack = null;
+                    _aiPlayerWhite = null;
+                    _board = null;
+                }
+
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            //GC.SuppressFinalize(this);
         }
     }
 }

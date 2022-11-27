@@ -1,21 +1,6 @@
-﻿using ChessNet.Data.Enums;
-using ChessNet.Data.Models;
-using ChessNet.Desktop.ChessGameControls;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using ChessNet.Desktop.ChessGameControls;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ChessNet.Desktop
 {
@@ -36,6 +21,7 @@ namespace ChessNet.Desktop
         {
             MainWindowGrid.Children.Clear();
 
+            _boardTableControl?.Dispose();
             _boardTableControl = new(isAiOnly: isAI);
             _boardTableControl.PlayerMove += BoardTableContorl_PlayerMove;
             MainWindowGrid.Children.Add(_boardTableControl);
