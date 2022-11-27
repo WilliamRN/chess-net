@@ -42,7 +42,7 @@ namespace ChessNet.Desktop
             Title = $"[ChessNet] Current Player: {_boardTableControl.ChessGame.CurrentPlayer.Color}";
         }
 
-        private void _boardTable_PlayerMove(object sender, Models.Events.PlayerMoveEvent e)
+        private void _boardTable_PlayerMove(object sender, Models.Events.PlayerMoveResultEvent e)
         {
             Title = $"[ChessNet] Current Player: {e.Player.Color}, " +
                 $"LastMove: {e.MoveResult.From.AsString()} to {e.MoveResult.To.AsString()}, " +

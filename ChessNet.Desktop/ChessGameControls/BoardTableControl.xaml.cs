@@ -34,7 +34,7 @@ namespace ChessNet.Desktop.ChessGameControls
         
         public ChessGame ChessGame { get; set; }
 
-        public event EventHandler<PlayerMoveEvent> PlayerMove;
+        public event EventHandler<PlayerMoveResultEvent> PlayerMove;
 
         public BoardTableControl(bool isColorInverted = true)
         {
@@ -45,18 +45,24 @@ namespace ChessNet.Desktop.ChessGameControls
 
             _rows = ChessGame.Board.Rows;
             _columns = ChessGame.Board.Columns;
-            _board = new BoardCellControl[ChessGame.Board.Rows, ChessGame.Board.Columns];
+            _board = new BoardCellControl[_rows, _columns];
             _aiPlayer = new RamdomAI(ChessGame, Data.Enums.PieceColor.Black);
 
+            InitializeCellControls();
+            InitializeBoardGrid(isColorInverted);
+        }
+
+        private void InitializeCellControls()
+        {
             var pieces = ChessGame.Board.GetPieces();
             Piece piece;
 
-            for (int r = 0; r < ChessGame.Board.Rows; r++)
+            for (int r = 0; r < _rows; r++)
             {
-                for (int c = 0; c < ChessGame.Board.Columns; c++)
+                for (int c = 0; c < _columns; c++)
                 {
                     _board[r, c] = new(new(c, r), ChessGame);
-                    _board[r, c].PlayerMove += BoardTable_PlayerMove;           
+                    _board[r, c].CellMove += BoardTableControl_CellMove;
 
                     piece = pieces.FirstOrDefault(p => p.Position.Column == c && p.Position.Row == r);
 
@@ -64,16 +70,9 @@ namespace ChessNet.Desktop.ChessGameControls
                         _board[r, c].Piece = piece;
                 }
             }
-
-            InitializeBoard(isColorInverted);
         }
 
-        private void ChessGame_BoardUpdate(object? sender, Data.Models.Events.BoardUpdateEvent e)
-        {
-            _board[e.Position.Row, e.Position.Column].Piece = e.PieceAtPosition;
-        }
-
-        private void InitializeBoard(bool isInverted = true)
+        private void InitializeBoardGrid(bool isInverted = true)
         {
             for (int i = 0; i < _columns; i++)
                 BoardGrid.ColumnDefinitions.Add(new ColumnDefinition());
@@ -92,27 +91,29 @@ namespace ChessNet.Desktop.ChessGameControls
             }
         }
 
-        private void BoardTable_PlayerMove(object sender, PlayerMoveEvent e)
+        private void BoardTableControl_CellMove(object? sender, CellMoveEvent e)
         {
-            PlayerMove?.Invoke(sender, e);
+            try
+            {
+                var result = ChessGame.Move(new(e.From, e.To));
+                PlayerMove?.Invoke(this, new(result, e.Player, ChessGame));
+            }
+            catch
+            {
+                // TODO: Alerts and information.
+            }
 
-            if (ChessGame.CurrentPlayer.Color == Data.Enums.PieceColor.Black &&
+            if (ChessGame.CurrentPlayer.Color == _aiPlayer.GetColor() &&
                 !ChessGame.IsFinished)
             {
                 var move = _aiPlayer.GetNextMove();
-
-                try
-                {
-                    var player = ChessGame.CurrentPlayer;
-                    var result = ChessGame.Move(move);
-
-                    PlayerMove?.Invoke(this, new(result, player, ChessGame));
-                }
-                catch
-                {
-                    // TODO: Alerts and information.
-                }
+                BoardTableControl_CellMove(this, new(ChessGame.CurrentPlayer, move.FromPosition, move.ToPosition));
             }
+        }
+
+        private void ChessGame_BoardUpdate(object? sender, Data.Models.Events.BoardUpdateEvent e)
+        {
+            _board[e.Position.Row, e.Position.Column].Piece = e.PieceAtPosition;
         }
     }
 }

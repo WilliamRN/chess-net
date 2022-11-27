@@ -33,8 +33,7 @@ namespace ChessNet.Desktop.ChessGameControls
         public Piece Piece { get => _piece; set => SetPiece(value); }
         public BoardPosition BoardPosition { get; private set; }
 
-        public event PlayerMoveEventHandler PlayerMove;
-        public delegate void PlayerMoveEventHandler(object sender, PlayerMoveEvent e);
+        public event EventHandler<CellMoveEvent> CellMove;
 
         public BoardCellControl(BoardPosition boardPosition, ChessGame chessGame)
         {
@@ -104,17 +103,7 @@ namespace ChessNet.Desktop.ChessGameControls
             {
                 BoardPosition from = cell.BoardPosition;
                 BoardPosition to = this.BoardPosition;
-                var player = _chessGame.CurrentPlayer;
-
-                try
-                {
-                    var result = _chessGame.Move(from, to);
-                    PlayerMove.Invoke(this, new(result, player, _chessGame));
-                }
-                catch
-                {
-                    // TODO: Alerts and information.
-                }
+                CellMove?.Invoke(this, new CellMoveEvent(_chessGame.CurrentPlayer, from, to));
             }
         }
     }

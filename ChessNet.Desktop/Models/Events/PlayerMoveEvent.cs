@@ -9,17 +9,23 @@ using System.Threading.Tasks;
 
 namespace ChessNet.Desktop.Models.Events
 {
-    public class PlayerMoveEvent
+    public class PlayerMoveResultEvent
     {
         public MoveResult MoveResult { get; set; }
         public Player Player { get; set; }
+        public Player CurrentPlayer { get; set; }
         public GameStates State { get; set; }
+        public int WhiteScore { get; set; }
+        public int BlackScore { get; set; }
 
-        public PlayerMoveEvent(MoveResult moveResult, Player player, ChessGame game)
+        public PlayerMoveResultEvent(MoveResult moveResult, Player player, ChessGame game)
         {
             MoveResult = moveResult;
             Player = player;
+            CurrentPlayer = game.CurrentPlayer;
             State = game.State;
+            WhiteScore = game.WhiteScore;
+            BlackScore = game.BlackScore;
         }
     }
 }
