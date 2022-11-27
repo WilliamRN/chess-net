@@ -6,8 +6,4 @@
     <Nullable>annotations</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ChessNet.Data\ChessNet.Data.csproj" />
-  </ItemGroup>
-
 </Project>

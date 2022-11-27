@@ -14,10 +14,9 @@ namespace ChessNet.Data.Models.Pieces
 
         }
 
-        public override string GetSymbol()
-        {
-            return Color == PieceColor.White ? "♘" : "♞";
-        }
+        public override string Symbol => Color == PieceColor.White ? "♘" : "♞";
+
+        public override PieceType PieceType => PieceType.Knight;
 
         public override IEnumerable<Movement> GetMovements()
         {
@@ -31,7 +30,7 @@ namespace ChessNet.Data.Models.Pieces
             }
         }
 
-        internal static IEnumerable<Knight> GetKnightAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
+        public override IEnumerable<Piece> GetAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
         {
             Piece attacker;
             var attackerColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;

@@ -20,22 +20,19 @@ namespace ChessNet.Data.Models.Pieces
 
         }
 
-        public override string GetSymbol()
-        {
-            return Color == PieceColor.White ? "♙" : "♟";
-        }
+        public override string Symbol => Color == PieceColor.White ? "♙" : "♟";
+
+        public override PieceType PieceType => PieceType.Pawn;
 
         public override IEnumerable<Movement> GetMovements()
         {
             if (!IsInChessBoard) yield break;
 
-            BoardPosition position;
-            Movement move;
             var isPieceAhead = false;
 
             // Can move but not capture ahead
-            position = Position.GetOffset(0, PawnStep);
-            move = Board.MoveTo(position);
+            var position = Position.GetOffset(0, PawnStep);
+            var move = Board.MoveTo(position);
 
             if (IsValidMove(move))
                 yield return move;
@@ -113,10 +110,10 @@ namespace ChessNet.Data.Models.Pieces
 
         public bool IsPromotingToQueen()
         {
-            return Position.Row == Board.Rows - 1 || Position.Row == 0;
+            return IsWhite ? Position.Row == Board.Rows - 1 : Position.Row == 0;
         }
 
-        internal static IEnumerable<Pawn> GetPawnAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
+        public override IEnumerable<Piece> GetAttackersFor(ChessBoard chessBoard, PieceColor color, BoardPosition position)
         {
             Piece attacker;
             var attackerColor = color == PieceColor.White ? PieceColor.Black : PieceColor.White;

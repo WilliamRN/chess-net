@@ -6,7 +6,7 @@ namespace ChessNet.Data.Interfaces
     public interface IPlayer
     {
         public PieceMovement GetNextMove();
-        public string GetName();
-        public PieceColor GetColor();
+        public string Name { get; }
+        public PieceColor Color { get; }
     }
 }

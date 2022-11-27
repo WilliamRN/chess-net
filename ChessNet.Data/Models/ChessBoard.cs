@@ -1,6 +1,7 @@
 ﻿using ChessNet.Data.Constants;
 using ChessNet.Data.Enums;
 using ChessNet.Data.Extensions;
+using ChessNet.Data.Models.Events;
 using ChessNet.Data.Models.Pieces;
 using ChessNet.Data.Structs;
 using System.Text;
@@ -16,6 +17,8 @@ namespace ChessNet.Data.Models
         public Movement LastMove { get; private set; }
         public object LastMovedPiece { get; private set; }
 
+        internal event EventHandler<BoardUpdateEvent> BoardUpdate;
+
         public ChessBoard(int columns = DefaultValues.BOARD_SIZE, int rows = DefaultValues.BOARD_SIZE)
         {
             Columns = columns;
@@ -29,6 +32,7 @@ namespace ChessNet.Data.Models
                 GetPiece(piece.Position) == null)
             {
                 _board[piece.Position.Column, piece.Position.Row] = piece;
+                BoardUpdate?.Invoke(this, new(piece.Position, piece));
                 piece.Board = this;
                 return true;
             }
@@ -45,12 +49,20 @@ namespace ChessNet.Data.Models
                 if (currentPiece != null)
                 {
                     _board[currentPiece.Position.Column, currentPiece.Position.Row] = null;
+                    BoardUpdate?.Invoke(this, new(currentPiece.Position, null));
                     piece.Board = currentPiece.Board = null;
                     return true;
                 }
             }
 
             return false;
+        }
+
+        public IEnumerable<Piece> GetPieces()
+        {
+            return _board
+                .Cast<Piece>()
+                .Where(p => p != null);
         }
 
         public IEnumerable<Piece> GetPieces(PieceColor pieceColor)
@@ -117,6 +129,9 @@ namespace ChessNet.Data.Models
             LastMove = pieceMovement;
             LastMovedPiece = piece;
 
+            BoardUpdate?.Invoke(this, new(from, null));
+            BoardUpdate?.Invoke(this, new(to, originPiece));
+
             return destinationPiece;
         }
 
@@ -139,6 +154,10 @@ namespace ChessNet.Data.Models
             LastMove = pieceMovement;
             LastMovedPiece = piece;
 
+            BoardUpdate?.Invoke(this, new(capturedFrom, null));
+            BoardUpdate?.Invoke(this, new(from, null));
+            BoardUpdate?.Invoke(this, new(to, originPiece));
+
             return capturedPiece;
         }
 
@@ -147,16 +166,23 @@ namespace ChessNet.Data.Models
             Piece rook = pieceMovement.PieceAtDestination;
             int rookStep = (king.Position.Column - pieceMovement.Destination.Column) > 0 ? -1 : 1;
 
+            BoardPosition rookPreviousPosition = rook.Position;
             BoardPosition rookPosition = new(king.Position.Column + rookStep, king.Position.Row);
+            BoardPosition kingPreviousPosition = king.Position;
             BoardPosition kingPosition = pieceMovement.Destination;
 
-            _board[rook.Position.Column, rook.Position.Row] = null;
+            _board[rookPreviousPosition.Column, rookPreviousPosition.Row] = null;
             _board[rookPosition.Column, rookPosition.Row] = rook;
             rook.Position = rookPosition;
 
-            _board[king.Position.Column, king.Position.Row] = null;
+            _board[kingPreviousPosition.Column, kingPreviousPosition.Row] = null;
             _board[kingPosition.Column, kingPosition.Row] = king;
             king.Position = kingPosition;
+
+            BoardUpdate?.Invoke(this, new(rookPreviousPosition, null));
+            BoardUpdate?.Invoke(this, new(rookPosition, rook));
+            BoardUpdate?.Invoke(this, new(kingPreviousPosition, null));
+            BoardUpdate?.Invoke(this, new(kingPosition, king));
 
             return null;
         }
@@ -198,13 +224,20 @@ namespace ChessNet.Data.Models
             else
                 previewBoard = this;
 
-            return result
-                .Concat(King.GetKingAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Pawn.GetPawnAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Knight.GetKnightAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Bishop.GetBishopAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Rook.GetRookAttackersFor(previewBoard, piece.Color, position))
-                .Concat(Queen.GetQueenAttackersFor(previewBoard, piece.Color, position));
+            var oposingPieceTypes = previewBoard
+                .GetPieces(piece.Color == PieceColor.White ? PieceColor.Black : PieceColor.White)
+                .GroupBy(p => p.PieceType, (key, g) => g.OrderBy(e => e.PieceType).FirstOrDefault())
+                .Where(p => p != null);
+
+            foreach (var pieceType in oposingPieceTypes)
+            {
+                foreach (var attacker in pieceType.GetAttackersFor(previewBoard, piece.Color, position))
+                {
+                    yield return attacker;
+                }
+            }
+
+            yield break;
         }
 
         public IEnumerable<Piece> AttackersFor(Piece piece) => 
@@ -240,7 +273,7 @@ namespace ChessNet.Data.Models
 
                 for (int c = 0; c < Columns; c++)
                 {
-                    sb.Append($"[{(_board[c, r] != null ? _board[c, r].GetSymbol() : "﹘")}]");
+                    sb.Append($"[{(_board[c, r] != null ? _board[c, r].Symbol : "﹘")}]");
                 }
 
                 sb.Append("\n");

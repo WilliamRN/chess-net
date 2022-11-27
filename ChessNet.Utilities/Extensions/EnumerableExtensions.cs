@@ -1,7 +1,4 @@
-﻿using ChessNet.Data.Models;
-using ChessNet.Data.Structs;
-
-namespace ChessNet.Utilities.Extensions
+﻿namespace ChessNet.Utilities.Extensions
 {
     public static class EnumerableExtensions
     {

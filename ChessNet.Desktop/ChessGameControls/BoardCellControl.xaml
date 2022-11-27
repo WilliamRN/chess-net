@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="ChessNet.Desktop.ChessGameControls.BoardCellControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ChessNet.Desktop.ChessGameControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="500"
+             MouseMove="Grid_MouseMove" AllowDrop="True" Drop="Grid_Drop">
+    <Grid>
+        <StackPanel x:Name="CellBackGroundPanel" Background="#FF52372D">
+            <Image Name="CellImage" Stretch="Fill"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

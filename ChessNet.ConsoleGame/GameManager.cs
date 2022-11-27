@@ -124,10 +124,10 @@ namespace ChessNet.ConsoleGame
                 case GameplayMode.AIOnly:
 
                     _playerWhite = new RamdomAI(ChessGame, PieceColor.White, "Computer One");
-                    _whitePlayerName = _playerWhite.GetName();
+                    _whitePlayerName = _playerWhite.Name;
 
                     _playerBlack = new RamdomAI(ChessGame, PieceColor.Black, "Computer Two");
-                    _blackPlayerName = _playerBlack.GetName();
+                    _blackPlayerName = _playerBlack.Name;
 
                     _actionDelay = DefaultValues.ACTION_DELAY_AI_ONLY;
                     break;
@@ -139,7 +139,7 @@ namespace ChessNet.ConsoleGame
                     _playerWhite = new HumanConsolePlayer(_whitePlayerName, PieceColor.White);
 
                     _playerBlack = new RamdomAI(ChessGame, PieceColor.Black);
-                    _blackPlayerName = _playerBlack.GetName();
+                    _blackPlayerName = _playerBlack.Name;
                     break;
             }
         }
